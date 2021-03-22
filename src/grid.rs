@@ -1,8 +1,11 @@
+use math::{int2, irect, Int2, IntRect, IntRectIter};
 use std::ops::{Deref, DerefMut};
+use std::ptr::null;
+use std::slice::IterMut;
 
 pub struct Grid<T> {
-    width: usize,
-    height: usize,
+    width: i32,
+    height: i32,
     data: Vec<T>,
 }
 
@@ -17,11 +20,11 @@ impl<T> Default for Grid<T> {
 }
 
 impl<T> Grid<T> {
-    pub fn width(&self) -> usize {
+    pub fn width(&self) -> i32 {
         self.width
     }
 
-    pub fn height(&self) -> usize {
+    pub fn height(&self) -> i32 {
         self.height
     }
 
@@ -33,7 +36,7 @@ impl<T> Grid<T> {
         &mut self.data
     }
 
-    pub fn new_with<F>(width: usize, height: usize, f: F) -> Self
+    pub fn new_with<F>(width: i32, height: i32, f: F) -> Self
     where
         F: FnMut() -> T,
     {
@@ -42,50 +45,151 @@ impl<T> Grid<T> {
         grid
     }
 
-    pub fn resize_with<F>(&mut self, width: usize, height: usize, f: F)
+    pub fn resize_with<F>(&mut self, width: i32, height: i32, f: F)
     where
         F: FnMut() -> T,
     {
+        let width = width.max(0);
+        let height = height.max(0);
         if self.width != width || self.height != height {
             self.width = width;
             self.height = height;
-            self.data.resize_with(width * height, f);
+            self.data.resize_with((width * height) as usize, f);
         }
     }
 
-    pub fn get(&self, x: usize, y: usize) -> Option<&T> {
-        self.data.get(y * self.width + x)
+    pub fn get(&self, x: i32, y: i32) -> Option<&T> {
+        self.contains(x, y)
+            .then(|| unsafe { self.data.get_unchecked((y * self.width + x) as usize) })
     }
 
-    pub unsafe fn get_unchecked(&self, x: usize, y: usize) -> &T {
-        self.data.get_unchecked(y * self.width + x)
+    pub unsafe fn get_unchecked(&self, x: i32, y: i32) -> &T {
+        self.data.get_unchecked((y * self.width + x) as usize)
     }
 
-    pub fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
-        self.data.get_mut(y * self.width + x)
-    }
-
-    pub unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut T {
-        self.data.get_unchecked_mut(y * self.width + x)
-    }
-}
-
-impl<T> Grid<T>
-where
-    T: Default,
-{
-    pub fn new_with_default(width: usize, height: usize) -> Self {
-        let mut grid = Grid::default();
-        grid.resize_with_default(width, height);
-        grid
-    }
-
-    pub fn resize_with_default(&mut self, width: usize, height: usize) {
-        if self.width != width || self.height != height {
-            self.width = width;
-            self.height = height;
-            self.data.resize_with(width * height, || T::default());
+    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut T> {
+        if self.contains(x, y) {
+            let val = unsafe { self.data.get_unchecked_mut((y * self.width + x) as usize) };
+            Some(val)
+        } else {
+            None
         }
+    }
+
+    pub unsafe fn get_unchecked_mut(&mut self, x: i32, y: i32) -> &mut T {
+        self.data.get_unchecked_mut((y * self.width + x) as usize)
+    }
+
+    pub fn set(&mut self, x: i32, y: i32, value: T) {
+        if self.contains(x, y) {
+            unsafe {
+                self.set_unchecked(x, y, value);
+            }
+        }
+    }
+
+    pub unsafe fn set_unchecked(&mut self, x: i32, y: i32, value: T) {
+        *self.get_unchecked_mut(x, y) = value;
+    }
+
+    pub fn set_rect_with<F>(&mut self, rect: &IntRect, mut f: F)
+    where
+        F: FnMut(i32, i32) -> T,
+    {
+        if let Some(rect) = self.bounds().overlap(&rect) {
+            for y in rect.y..rect.bottom() {
+                for x in rect.x..rect.right() {
+                    unsafe {
+                        *self.get_unchecked_mut(x, y) = f(x, y);
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn clear_with<F>(&mut self, f: F)
+    where
+        F: FnMut(i32, i32) -> T,
+    {
+        self.set_rect_with(&self.bounds(), f);
+    }
+
+    pub fn copy_from<'a, U>(&mut self, other: &'a Grid<U>, src_rect: &IntRect, dst_pos: Int2)
+    where
+        &'a U: Into<T>,
+    {
+        let rect = irect(dst_pos.x, dst_pos.y, src_rect.w, src_rect.h);
+        if let Some(rect) = rect.overlap(&src_rect) {
+            self.set_rect_with(&rect, |x, y| unsafe { other.get_unchecked(x, y).into() })
+        }
+    }
+
+    pub fn contains(&self, x: i32, y: i32) -> bool {
+        self.bounds().contains(int2(x, y))
+    }
+
+    pub fn bounds(&self) -> IntRect {
+        irect(0, 0, self.width, self.height)
+    }
+
+    pub fn get_bounds<C>(&self, mut cond: C) -> Option<IntRect>
+    where
+        C: FnMut(&T) -> bool,
+    {
+        let mut min = int2(i32::MIN, i32::MIN);
+        let mut max = int2(i32::MAX, i32::MAX);
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let val = unsafe { self.get_unchecked(x, y) };
+                if cond(val) {
+                    min = min.min(int2(x, y));
+                    max = max.max(int2(x, y));
+                }
+            }
+        }
+        (max.x > min.x && max.y > min.y).then(|| irect(min.x, min.y, max.x - min.x, max.y - min.y))
+    }
+
+    pub fn iter(&self) -> GridIter<T> {
+        GridIter {
+            grid: self,
+            iter: self.bounds().iter(),
+        }
+    }
+
+    pub fn iter_mut(&mut self) -> GridIterMut<T> {
+        let iter = self.bounds().iter();
+        GridIterMut { grid: self, iter }
+    }
+
+    pub fn values(&self) -> GridValues<T> {
+        let iter = self.bounds().iter();
+        GridValues { grid: self, iter }
+    }
+
+    pub fn values_mut(&mut self) -> GridValuesMut<T> {
+        let iter = self.bounds().iter();
+        GridValuesMut { grid: self, iter }
+    }
+
+    pub fn rect(&self, rect: &IntRect) -> Option<GridIter<T>> {
+        let iter = self.bounds().overlap(rect)?.iter();
+        Some(GridIter { grid: self, iter })
+    }
+
+    pub fn rect_mut(&mut self, rect: &IntRect) -> Option<GridIterMut<T>> {
+        let iter = self.bounds().overlap(rect)?.iter();
+        Some(GridIterMut { grid: self, iter })
+    }
+
+    pub fn rect_values(&self, rect: &IntRect) -> Option<GridValues<T>> {
+        let iter = self.bounds().overlap(rect)?.iter();
+        Some(GridValues { grid: self, iter })
+    }
+
+    pub fn rect_values_mut(&mut self, rect: &IntRect) -> Option<GridValuesMut<T>> {
+        let iter = self.bounds().overlap(rect)?.iter();
+        Some(GridValuesMut { grid: self, iter })
     }
 }
 
@@ -93,18 +197,36 @@ impl<T> Grid<T>
 where
     T: Clone,
 {
-    pub fn new(width: usize, height: usize, fill: T) -> Self {
+    pub fn new(width: i32, height: i32, fill: T) -> Self {
         let mut grid = Grid::default();
         grid.resize(width, height, fill);
         grid
     }
 
-    pub fn resize(&mut self, width: usize, height: usize, fill: T) {
+    pub fn resize(&mut self, width: i32, height: i32, fill: T) {
+        let width = width.max(0);
+        let height = height.max(0);
         if self.width != width || self.height != height {
             self.width = width;
             self.height = height;
-            self.data.resize(width * height, fill);
+            self.data.resize((width * height) as usize, fill);
         }
+    }
+
+    pub fn set_rect(&mut self, rect: &IntRect, value: T) {
+        if let Some(rect) = self.bounds().overlap(&rect) {
+            for y in rect.y..rect.bottom() {
+                for x in rect.x..rect.right() {
+                    unsafe {
+                        *self.get_unchecked_mut(x, y) = value.clone();
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn clear(&mut self, value: T) {
+        self.set_rect(&self.bounds(), value);
     }
 }
 
@@ -131,5 +253,71 @@ impl<T> Deref for Grid<T> {
 impl<T> DerefMut for Grid<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.data
+    }
+}
+
+pub struct GridIter<'a, T> {
+    grid: &'a Grid<T>,
+    iter: IntRectIter,
+}
+
+impl<'a, T> Iterator for GridIter<'a, T> {
+    type Item = (Int2, &'a T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter
+            .next()
+            .and_then(|pos| self.grid.get(pos.x, pos.y).and_then(|val| Some((pos, val))))
+    }
+}
+
+pub struct GridIterMut<'a, T> {
+    grid: &'a mut Grid<T>,
+    iter: IntRectIter,
+}
+
+impl<'a, T> Iterator for GridIterMut<'a, T> {
+    type Item = (Int2, &'a mut T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next().and_then(|pos| {
+            self.grid.get_mut(pos.x, pos.y).and_then(|val| {
+                let ptr: *mut T = val;
+                unsafe { Some((pos, &mut *ptr)) }
+            })
+        })
+    }
+}
+
+pub struct GridValues<'a, T> {
+    grid: &'a Grid<T>,
+    iter: IntRectIter,
+}
+
+impl<'a, T> Iterator for GridValues<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter
+            .next()
+            .and_then(|pos| self.grid.get(pos.x, pos.y).and_then(|val| Some(val)))
+    }
+}
+
+pub struct GridValuesMut<'a, T> {
+    grid: &'a mut Grid<T>,
+    iter: IntRectIter,
+}
+
+impl<'a, T> Iterator for GridValuesMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next().and_then(|pos| {
+            self.grid.get_mut(pos.x, pos.y).and_then(|val| {
+                let ptr: *mut T = val;
+                unsafe { Some(&mut *ptr) }
+            })
+        })
     }
 }
