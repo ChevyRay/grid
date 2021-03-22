@@ -1,6 +1,14 @@
 mod grid;
+mod grid_iter;
+mod grid_iter_mut;
+mod grid_values;
+mod grid_values_mut;
 
 pub use grid::Grid;
+pub use grid_iter::GridIter;
+pub use grid_iter_mut::GridIterMut;
+pub use grid_values::GridValues;
+pub use grid_values_mut::GridValuesMut;
 
 pub struct Item(bool);
 

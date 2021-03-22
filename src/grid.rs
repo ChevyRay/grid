@@ -1,7 +1,6 @@
-use math::{int2, irect, Int2, IntRect, IntRectIter};
+use crate::{GridIter, GridIterMut, GridValues, GridValuesMut};
+use math::{int2, irect, Int2, IntRect};
 use std::ops::{Deref, DerefMut};
-use std::ptr::null;
-use std::slice::IterMut;
 
 pub struct Grid<T> {
     width: i32,
@@ -253,71 +252,5 @@ impl<T> Deref for Grid<T> {
 impl<T> DerefMut for Grid<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.data
-    }
-}
-
-pub struct GridIter<'a, T> {
-    grid: &'a Grid<T>,
-    iter: IntRectIter,
-}
-
-impl<'a, T> Iterator for GridIter<'a, T> {
-    type Item = (Int2, &'a T);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter
-            .next()
-            .and_then(|pos| self.grid.get(pos.x, pos.y).and_then(|val| Some((pos, val))))
-    }
-}
-
-pub struct GridIterMut<'a, T> {
-    grid: &'a mut Grid<T>,
-    iter: IntRectIter,
-}
-
-impl<'a, T> Iterator for GridIterMut<'a, T> {
-    type Item = (Int2, &'a mut T);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().and_then(|pos| {
-            self.grid.get_mut(pos.x, pos.y).and_then(|val| {
-                let ptr: *mut T = val;
-                unsafe { Some((pos, &mut *ptr)) }
-            })
-        })
-    }
-}
-
-pub struct GridValues<'a, T> {
-    grid: &'a Grid<T>,
-    iter: IntRectIter,
-}
-
-impl<'a, T> Iterator for GridValues<'a, T> {
-    type Item = &'a T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter
-            .next()
-            .and_then(|pos| self.grid.get(pos.x, pos.y).and_then(|val| Some(val)))
-    }
-}
-
-pub struct GridValuesMut<'a, T> {
-    grid: &'a mut Grid<T>,
-    iter: IntRectIter,
-}
-
-impl<'a, T> Iterator for GridValuesMut<'a, T> {
-    type Item = &'a mut T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().and_then(|pos| {
-            self.grid.get_mut(pos.x, pos.y).and_then(|val| {
-                let ptr: *mut T = val;
-                unsafe { Some(&mut *ptr) }
-            })
-        })
     }
 }
