@@ -12,6 +12,6 @@ impl<'a, T> Iterator for GridValues<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         self.iter
             .next()
-            .and_then(|pos| self.grid.get(pos.x, pos.y).and_then(|val| Some(val)))
+            .and_then(|pos| self.grid.getp(pos).and_then(|val| Some(val)))
     }
 }

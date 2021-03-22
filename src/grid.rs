@@ -44,6 +44,22 @@ impl<T> Grid<T> {
         grid
     }
 
+    pub fn from_iter<I>(width: i32, height: i32, mut iter: I) -> Option<Self>
+    where
+        I: Iterator<Item = T>,
+    {
+        let size = (width * height) as usize;
+        let mut data = Vec::with_capacity(size);
+        while data.len() < size {
+            data.push(iter.next()?);
+        }
+        Some(Self {
+            width,
+            height,
+            data,
+        })
+    }
+
     pub fn resize_with<F>(&mut self, width: i32, height: i32, f: F)
     where
         F: FnMut() -> T,
@@ -62,8 +78,16 @@ impl<T> Grid<T> {
             .then(|| unsafe { self.data.get_unchecked((y * self.width + x) as usize) })
     }
 
+    pub fn getp(&self, p: Int2) -> Option<&T> {
+        self.get(p.x, p.y)
+    }
+
     pub unsafe fn get_unchecked(&self, x: i32, y: i32) -> &T {
         self.data.get_unchecked((y * self.width + x) as usize)
+    }
+
+    pub unsafe fn getp_unchecked(&self, p: Int2) -> &T {
+        self.get_unchecked(p.x, p.y)
     }
 
     pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut T> {
@@ -75,8 +99,16 @@ impl<T> Grid<T> {
         }
     }
 
+    pub fn getp_mut(&mut self, p: Int2) -> Option<&mut T> {
+        self.get_mut(p.x, p.y)
+    }
+
     pub unsafe fn get_unchecked_mut(&mut self, x: i32, y: i32) -> &mut T {
         self.data.get_unchecked_mut((y * self.width + x) as usize)
+    }
+
+    pub unsafe fn getp_unchecked_mut(&mut self, p: Int2) -> &mut T {
+        self.get_unchecked_mut(p.x, p.y)
     }
 
     pub fn set(&mut self, x: i32, y: i32, value: T) {
@@ -87,8 +119,16 @@ impl<T> Grid<T> {
         }
     }
 
+    pub fn setp(&mut self, p: Int2, value: T) {
+        self.set(p.x, p.y, value);
+    }
+
     pub unsafe fn set_unchecked(&mut self, x: i32, y: i32, value: T) {
         *self.get_unchecked_mut(x, y) = value;
+    }
+
+    pub unsafe fn setp_unchecked(&mut self, p: Int2, value: T) {
+        self.set_unchecked(p.x, p.y, value);
     }
 
     pub fn set_rect_with<F>(&mut self, rect: &IntRect, mut f: F)
