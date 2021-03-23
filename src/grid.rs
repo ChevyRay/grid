@@ -1,7 +1,8 @@
 use crate::{GridIter, GridIterMut, GridValues, GridValuesMut};
-use math::{int2, irect, Int2, IntRect};
+use math::{int2, irect, Int2, IntRect, IntRectIter};
 use std::ops::{Deref, DerefMut};
 
+#[derive(Clone, Debug)]
 pub struct Grid<T> {
     width: i32,
     height: i32,
@@ -153,16 +154,6 @@ impl<T> Grid<T> {
         self.set_rect_with(&self.bounds(), f);
     }
 
-    pub fn copy_from<'a, U>(&mut self, other: &'a Grid<U>, src_rect: &IntRect, dst_pos: Int2)
-    where
-        &'a U: Into<T>,
-    {
-        let rect = irect(dst_pos.x, dst_pos.y, src_rect.w, src_rect.h);
-        if let Some(rect) = rect.overlap(&src_rect) {
-            self.set_rect_with(&rect, |x, y| unsafe { other.get_unchecked(x, y).into() })
-        }
-    }
-
     pub fn contains(&self, x: i32, y: i32) -> bool {
         self.bounds().contains(int2(x, y))
     }
@@ -266,6 +257,68 @@ where
 
     pub fn clear(&mut self, value: T) {
         self.set_rect(&self.bounds(), value);
+    }
+}
+
+impl<T> Grid<T>
+where
+    T: Clone,
+{
+    pub fn copy_from<'a>(&mut self, other: &'a Grid<T>, src_rect: &IntRect, dst_pos: Int2) {
+        let rect = irect(dst_pos.x, dst_pos.y, src_rect.w, src_rect.h);
+        if let Some(rect) = rect.overlap(&src_rect) {
+            self.set_rect_with(&rect, |x, y| unsafe { other.get_unchecked(x, y).clone() })
+        }
+    }
+}
+
+impl<T> Grid<T>
+where
+    T: Clone + Default,
+{
+    fn get_target(target: Option<Self>, w: i32, h: i32) -> Self {
+        target
+            .and_then(|mut grid| {
+                grid.resize(w, h, T::default());
+                Some(grid)
+            })
+            .unwrap_or_else(|| Grid::new(w, h, T::default()))
+    }
+
+    pub fn rotate_right(&self, target: Option<Self>) -> Self {
+        let mut target = Self::get_target(target, self.height, self.width);
+        let h = self.height - 1;
+        for (pos, val) in self.iter() {
+            unsafe { target.set_unchecked(h - pos.y, pos.x, val.clone()) };
+        }
+        target
+    }
+
+    pub fn rotate_left(&self, target: Option<Self>) -> Self {
+        let mut target = Self::get_target(target, self.height, self.width);
+        let w = self.width - 1;
+        for (pos, val) in self.iter() {
+            unsafe { target.set_unchecked(pos.y, w - pos.x, val.clone()) };
+        }
+        target
+    }
+
+    pub fn crop(&self, rect: &IntRect, target: Option<Self>) -> Option<Self> {
+        self.bounds().overlap(rect).and_then(|rect| {
+            let mut target = Self::get_target(target, rect.w, rect.h);
+            for (pos, val) in target.iter_mut() {
+                *val = unsafe { self.getp_unchecked(rect.top_left() + pos).clone() };
+            }
+            Some(target)
+        })
+    }
+
+    pub fn get_subrect(&self, rect: &IntRect, target: Option<Self>) -> Option<Self> {
+        self.bounds().overlap(rect).and_then(|rect| {
+            let mut target = Self::get_target(target, rect.w, rect.h);
+            target.copy_from(self, &rect, Int2::ZERO);
+            Some(target)
+        })
     }
 }
 
