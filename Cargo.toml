@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 math = { git = "https://github.com/ChevyRay/math", branch = "main" }
-#serde = {version = "1.0.124", optional = true, default-features = false}
+serde = {version = "1.0.124", optional = true, default-features = false}

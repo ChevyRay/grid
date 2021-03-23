@@ -3,6 +3,7 @@ use math::{int2, irect, Int2, IntRect};
 use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Grid<T> {
     width: i32,
     height: i32,
