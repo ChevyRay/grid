@@ -222,6 +222,36 @@ impl<T> Grid<T> {
         let iter = self.bounds().overlap(rect)?.iter();
         Some(GridValuesMut { grid: self, iter })
     }
+
+    pub fn flip_x(&mut self) {
+        for x in 0..self.width {
+            let x2 = (self.width - 1) - x;
+            if x != x2 {
+                for y in 0..self.height {
+                    let a_ptr = &mut self.data[(y * self.width + x) as usize] as *mut T;
+                    let b_ptr = &mut self.data[(y * self.width + x2) as usize] as *mut T;
+                    unsafe {
+                        std::mem::swap(&mut *a_ptr, &mut *b_ptr);
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn flip_y(&mut self) {
+        for y in 0..self.height {
+            let y2 = (self.height - 1) - y;
+            if y != y2 {
+                for x in 0..self.width {
+                    let a_ptr = &mut self.data[(y * self.width + x) as usize] as *mut T;
+                    let b_ptr = &mut self.data[(y2 * self.width + x) as usize] as *mut T;
+                    unsafe {
+                        std::mem::swap(&mut *a_ptr, &mut *b_ptr);
+                    }
+                }
+            }
+        }
+    }
 }
 
 impl<T> Grid<T>
