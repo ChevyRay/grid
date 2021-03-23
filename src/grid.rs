@@ -1,5 +1,5 @@
 use crate::{GridIter, GridIterMut, GridValues, GridValuesMut};
-use math::{int2, irect, Int2, IntRect, IntRectIter};
+use math::{int2, irect, Int2, IntRect};
 use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Debug)]
