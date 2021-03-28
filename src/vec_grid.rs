@@ -84,9 +84,9 @@ impl<T> VecGrid<T> {
                 let x2 = (w - 1) - x;
                 if x != x2 {
                     for y in 0..h {
-                        let a_ptr = &mut self.data[y * w + x] as *mut T;
-                        let b_ptr = &mut self.data[y * w + x2] as *mut T;
                         unsafe {
+                            let a_ptr = self.get_unchecked_mut((x, y)) as *mut T;
+                            let b_ptr = self.get_unchecked_mut((x2, y)) as *mut T;
                             std::mem::swap(&mut *a_ptr, &mut *b_ptr);
                         }
                     }
@@ -103,9 +103,9 @@ impl<T> VecGrid<T> {
                 let y2 = (h - 1) - y;
                 if y != y2 {
                     for x in 0..w {
-                        let a_ptr = &mut self.data[y * w + x] as *mut T;
-                        let b_ptr = &mut self.data[y2 * w + x] as *mut T;
                         unsafe {
+                            let a_ptr = self.get_unchecked_mut((x, y)) as *mut T;
+                            let b_ptr = self.get_unchecked_mut((x, y2)) as *mut T;
                             std::mem::swap(&mut *a_ptr, &mut *b_ptr);
                         }
                     }

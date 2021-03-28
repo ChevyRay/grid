@@ -47,3 +47,39 @@ impl<T, const W: usize, const H: usize> Grid<T> for ConstGrid<T, W, H> {
         self.data.get_unchecked_mut(y).get_unchecked_mut(x)
     }
 }
+
+impl<T, const W: usize, const H: usize> ConstGrid<T, W, H> {
+    pub fn flip_x(&mut self) {
+        if W > 0 {
+            for x in 0..W {
+                let x2 = (W - 1) - x;
+                if x != x2 {
+                    for y in 0..H {
+                        unsafe {
+                            let a_ptr = self.get_unchecked_mut((x, y)) as *mut T;
+                            let b_ptr = self.get_unchecked_mut((x2, y)) as *mut T;
+                            std::mem::swap(&mut *a_ptr, &mut *b_ptr);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn flip_y(&mut self) {
+        if H > 0 {
+            for y in 0..H {
+                let y2 = (H - 1) - y;
+                if y != y2 {
+                    for x in 0..W {
+                        unsafe {
+                            let a_ptr = self.get_unchecked_mut((x, y)) as *mut T;
+                            let b_ptr = self.get_unchecked_mut((x, y2)) as *mut T;
+                            std::mem::swap(&mut *a_ptr, &mut *b_ptr);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
