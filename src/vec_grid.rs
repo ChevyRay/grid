@@ -76,18 +76,6 @@ impl<T> VecGrid<T> {
         self.resize_with(width, height, || fill.clone().into());
     }
 
-    /*pub unsafe fn get_unchecked<I: GridIndex<T>>(&self, index: I) -> &T {
-        self.data.get_unchecked(index.index(self.width))
-    }
-
-    pub unsafe fn get_unchecked_mut<I: GridIndex<T>>(&mut self, index: I) -> &mut T {
-        self.data.get_unchecked_mut(index.index(self.width))
-    }
-
-    pub unsafe fn set_unchecked<I: GridIndex<T>, U: Into<T>>(&mut self, index: I, value: U) {
-        *self.get_unchecked_mut(index) = value.into();
-    }*/
-
     pub fn flip_x(&mut self) {
         if self.width > 0 {
             let w = self.width as usize;
