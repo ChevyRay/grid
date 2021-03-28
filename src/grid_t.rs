@@ -87,6 +87,19 @@ pub trait Grid<T> {
         (max.x > min.x && max.y > min.y).then(|| irect(min.x, min.y, max.x - min.x, max.y - min.y))
     }
 
+    unsafe fn get_bounds_unchecked<C: FnMut(&T) -> bool>(&self, mut cond: C) -> Option<IntRect> {
+        let mut min = int2(i32::MIN, i32::MIN);
+        let mut max = int2(i32::MAX, i32::MAX);
+        for p in self.bounds().iter() {
+            let val = self.get_unchecked(p);
+            if cond(val) {
+                min = min.min(p);
+                max = max.max(p);
+            }
+        }
+        (max.x > min.x && max.y > min.y).then(|| irect(min.x, min.y, max.x - min.x, max.y - min.y))
+    }
+
     fn clone_from<U: Clone + Into<T>, G: Grid<U>>(&mut self, grid: &G, rect: IntRect, dest: Int2) {
         if let Some(rect) = grid.bounds().overlap(&rect) {
             if let Some(rect) = self.bounds().overlap(&(rect + dest)) {
