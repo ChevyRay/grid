@@ -1,6 +1,4 @@
 use crate::{Grid, GridIndex};
-use math::{int2, irect, Int2, IntRect, IntRectIter};
-use std::marker::PhantomData;
 
 pub struct VecGrid<T> {
     data: Vec<T>,
@@ -36,25 +34,13 @@ impl<T> Grid<T> for VecGrid<T> {
         self.data.get_mut(i)
     }
 
-    fn fill_with<U: Into<T>, F: FnMut(Int2) -> U>(&mut self, rect: IntRect, mut f: F) {
-        if let Some(rect) = self.bounds().overlap(&rect) {
-            for p in rect.iter() {
-                unsafe { self.set_unchecked(p, f(p).into()) };
-            }
-        }
+    unsafe fn get_unchecked<I: GridIndex<T>>(&self, index: I) -> &T {
+        self.data.get_unchecked(index.index(self.width()))
     }
 
-    fn get_bounds<C: FnMut(&T) -> bool>(&self, mut cond: C) -> Option<IntRect> {
-        let mut min = int2(i32::MIN, i32::MIN);
-        let mut max = int2(i32::MAX, i32::MAX);
-        for p in self.bounds().iter() {
-            let val = unsafe { self.get_unchecked(p) };
-            if cond(val) {
-                min = min.min(p);
-                max = max.max(p);
-            }
-        }
-        (max.x > min.x && max.y > min.y).then(|| irect(min.x, min.y, max.x - min.x, max.y - min.y))
+    unsafe fn get_unchecked_mut<I: GridIndex<T>>(&mut self, index: I) -> &mut T {
+        let index = index.index(self.width());
+        self.data.get_unchecked_mut(index)
     }
 }
 
@@ -90,7 +76,7 @@ impl<T> VecGrid<T> {
         self.resize_with(width, height, || fill.clone().into());
     }
 
-    pub unsafe fn get_unchecked<I: GridIndex<T>>(&self, index: I) -> &T {
+    /*pub unsafe fn get_unchecked<I: GridIndex<T>>(&self, index: I) -> &T {
         self.data.get_unchecked(index.index(self.width))
     }
 
@@ -100,7 +86,7 @@ impl<T> VecGrid<T> {
 
     pub unsafe fn set_unchecked<I: GridIndex<T>, U: Into<T>>(&mut self, index: I, value: U) {
         *self.get_unchecked_mut(index) = value.into();
-    }
+    }*/
 
     pub fn flip_x(&mut self) {
         if self.width > 0 {
@@ -167,70 +153,5 @@ impl<T: Clone + Default> VecGrid<T> {
             target.set((pos.y, w - pos.x), val.clone());
         }
         target
-    }
-
-    pub fn in_rect_unchecked(&self, rect: IntRect) -> VecGridIter<T> {
-        let rect = self
-            .bounds()
-            .overlap(&rect)
-            .unwrap_or_else(|| IntRect::EMPTY);
-        VecGridIter {
-            grid: self,
-            iter: rect.iter(),
-            _marker: PhantomData::default(),
-        }
-    }
-
-    pub fn in_rect_unchecked_mut(&mut self, rect: IntRect) -> VecGridIterMut<T> {
-        let rect = self
-            .bounds()
-            .overlap(&rect)
-            .unwrap_or_else(|| IntRect::EMPTY);
-        VecGridIterMut {
-            grid: self,
-            iter: rect.iter(),
-            _marker: PhantomData::default(),
-        }
-    }
-
-    pub fn iter_unchecked(&self) -> VecGridIter<T> {
-        self.in_rect_unchecked(self.bounds())
-    }
-
-    pub fn iter_unchecked_mut(&mut self) -> VecGridIterMut<T> {
-        self.in_rect_unchecked_mut(self.bounds())
-    }
-}
-
-pub struct VecGridIter<'a, T> {
-    grid: &'a VecGrid<T>,
-    iter: IntRectIter,
-    _marker: PhantomData<T>,
-}
-
-impl<'a, T: 'a> Iterator for VecGridIter<'a, T> {
-    type Item = (Int2, &'a T);
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().and_then(|pos| {
-            let val = unsafe { self.grid.get_unchecked(pos) };
-            Some((pos, val))
-        })
-    }
-}
-
-pub struct VecGridIterMut<'a, T> {
-    grid: &'a mut VecGrid<T>,
-    iter: IntRectIter,
-    _marker: PhantomData<T>,
-}
-
-impl<'a, T: 'a> Iterator for VecGridIterMut<'a, T> {
-    type Item = (Int2, &'a mut T);
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next().and_then(|pos| {
-            let val = unsafe { self.grid.get_unchecked_mut(pos) };
-            let ptr: *mut T = val;
-            unsafe { Some((pos, &mut *ptr)) }
-        })
     }
 }

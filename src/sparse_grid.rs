@@ -85,6 +85,28 @@ impl<T> Grid<T> for SparseGrid<T> {
             }
         }
     }
+
+    unsafe fn get_unchecked<I: GridIndex<T>>(&self, index: I) -> &T {
+        let (x, y) = index.pos(self.width);
+        let row_i = *self.row_inds.get_unchecked(y) as usize;
+        let row_j = *self.row_inds.get_unchecked(y + 1) as usize;
+        if let Ok(ind) = self.cols[row_i..row_j].binary_search(&(x as i32)) {
+            self.vals.get_unchecked(row_i + ind)
+        } else {
+            panic!("no value in SparseGrid at ({}, {})", x, y)
+        }
+    }
+
+    unsafe fn get_unchecked_mut<I: GridIndex<T>>(&mut self, index: I) -> &mut T {
+        let (x, y) = index.pos(self.width);
+        let row_i = *self.row_inds.get_unchecked(y) as usize;
+        let row_j = *self.row_inds.get_unchecked(y + 1) as usize;
+        if let Ok(ind) = self.cols[row_i..row_j].binary_search(&(x as i32)) {
+            self.vals.get_unchecked_mut(row_i + ind)
+        } else {
+            panic!("no value in SparseGrid at ({}, {})", x, y)
+        }
+    }
 }
 
 impl<T> SparseGrid<T> {

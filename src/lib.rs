@@ -1,12 +1,14 @@
-mod base;
 mod const_grid;
 mod grid_index;
+mod grid_t;
+mod iterators;
 mod sparse_grid;
 mod vec_grid;
 
-pub use base::{Grid, GridIter, GridIterMut};
 pub use const_grid::ConstGrid;
 pub use grid_index::GridIndex;
+pub use grid_t::Grid;
+pub use iterators::{GridIter, GridIterMut, GridIterUnchecked, GridIterUncheckedMut};
 pub use sparse_grid::SparseGrid;
 pub use vec_grid::VecGrid;
 
