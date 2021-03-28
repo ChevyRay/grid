@@ -83,3 +83,23 @@ impl<T, const W: usize, const H: usize> ConstGrid<T, W, H> {
         }
     }
 }
+
+impl<T: Default + Copy, const W: usize, const H: usize> ConstGrid<T, W, H> {
+    pub fn rotate_right(&self, target: Option<ConstGrid<T, H, W>>) -> ConstGrid<T, H, W> {
+        let mut target = target.unwrap_or_else(|| ConstGrid::<T, H, W>::default());
+        let h = (H - 1) as i32;
+        for (pos, val) in self.iter() {
+            unsafe { target.set_unchecked((h - pos.y, pos.x), *val) };
+        }
+        target
+    }
+
+    pub fn rotate_left(&self, target: Option<ConstGrid<T, H, W>>) -> ConstGrid<T, H, W> {
+        let mut target = target.unwrap_or_else(|| ConstGrid::<T, H, W>::default());
+        let w = (W - 1) as i32;
+        for (pos, val) in self.iter() {
+            unsafe { target.set_unchecked((pos.y, w - pos.x), *val) };
+        }
+        target
+    }
+}

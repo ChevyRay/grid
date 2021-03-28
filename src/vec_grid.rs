@@ -129,7 +129,7 @@ impl<T: Clone + Default> VecGrid<T> {
         let mut target = Self::get_target(target, self.height, self.width);
         let h = (self.height - 1) as i32;
         for (pos, val) in self.iter() {
-            target.set((h - pos.y, pos.x), val.clone());
+            unsafe { target.set_unchecked((h - pos.y, pos.x), val.clone()) };
         }
         target
     }
@@ -138,7 +138,7 @@ impl<T: Clone + Default> VecGrid<T> {
         let mut target = Self::get_target(target, self.height, self.width);
         let w = (self.width - 1) as i32;
         for (pos, val) in self.iter() {
-            target.set((pos.y, w - pos.x), val.clone());
+            unsafe { target.set_unchecked((pos.y, w - pos.x), val.clone()) };
         }
         target
     }
