@@ -170,6 +170,10 @@ impl<T: Clone + Default> VecGrid<T> {
     }
 
     pub fn in_rect_unchecked(&self, rect: IntRect) -> VecGridIter<T> {
+        let rect = self
+            .bounds()
+            .overlap(&rect)
+            .unwrap_or_else(|| IntRect::EMPTY);
         VecGridIter {
             grid: self,
             iter: rect.iter(),
@@ -178,6 +182,10 @@ impl<T: Clone + Default> VecGrid<T> {
     }
 
     pub fn in_rect_unchecked_mut(&mut self, rect: IntRect) -> VecGridIterMut<T> {
+        let rect = self
+            .bounds()
+            .overlap(&rect)
+            .unwrap_or_else(|| IntRect::EMPTY);
         VecGridIterMut {
             grid: self,
             iter: rect.iter(),
