@@ -1,5 +1,8 @@
 use math::Int2;
 
+/// Trait for a value that can be used to index into a [`Grid`](crate::Grid).
+///
+/// Implementations provided for [`Int2`](crate::math::Int2), `usize`, `(i32, i32)`, and `(usize, usize)`.
 pub trait GridIndex<T> {
     fn index(&self, width: usize) -> usize;
     fn pos(&self, width: usize) -> (usize, usize);

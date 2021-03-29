@@ -1,5 +1,24 @@
 use crate::{Grid, GridIndex};
 
+/// A fixed-size grid with data stored in a `[[T; W]; H]`. Rather than
+/// living on the heap (like in [`VecGrid`](crate::VecGrid), the data for
+/// this grid lives locally in the struct.
+///
+/// ```rust
+/// use grid::{Grid, ConstGrid};
+///
+/// let mut g = ConstGrid::<char, 3, 3>::new(' ');
+/// g.set((0, 0), 'A');
+/// g.set((1, 1), 'B');
+/// g.set((2, 2), 'C');
+///
+/// assert_eq!(g.data(), &[
+///     ['A', ' ', ' '],
+///     [' ', 'B', ' '],
+///     [' ', ' ', 'C'],
+/// ]);
+/// ```
+#[derive(Debug, Clone)]
 pub struct ConstGrid<T, const W: usize, const H: usize> {
     data: [[T; W]; H],
 }
@@ -7,14 +26,6 @@ pub struct ConstGrid<T, const W: usize, const H: usize> {
 impl<T: Default + Copy, const W: usize, const H: usize> Default for ConstGrid<T, W, H> {
     fn default() -> Self {
         Self::new(T::default())
-    }
-}
-
-impl<T: Copy, const W: usize, const H: usize> ConstGrid<T, W, H> {
-    pub fn new<U: Into<T>>(fill: U) -> Self {
-        Self {
-            data: [[fill.into(); W]; H],
-        }
     }
 }
 
@@ -48,7 +59,28 @@ impl<T, const W: usize, const H: usize> Grid<T> for ConstGrid<T, W, H> {
     }
 }
 
+impl<T: Copy, const W: usize, const H: usize> ConstGrid<T, W, H> {
+    /// Construct a new grid filled with the provided value.
+    pub fn new<U: Into<T>>(fill: U) -> Self {
+        Self {
+            data: [[fill.into(); W]; H],
+        }
+    }
+}
+
 impl<T, const W: usize, const H: usize> ConstGrid<T, W, H> {
+    // Get a linear slice of all the grid's values.
+    pub fn data(&self) -> &[[T; W]; H] {
+        &self.data
+    }
+
+    /// Get a mutable linear slice of all the grid's values.
+    pub fn data_mut(&mut self) -> &mut [[T; W]; H] {
+        &mut self.data
+    }
+
+    /// Flip the grid horizontally in-place, without copying,
+    /// using [std::mem::swap](std::mem::swap) to move values.
     pub fn flip_x(&mut self) {
         if W > 0 {
             for x in 0..W {
@@ -66,6 +98,8 @@ impl<T, const W: usize, const H: usize> ConstGrid<T, W, H> {
         }
     }
 
+    /// Flip the grid vertically in-place, without copying,
+    /// using [std::mem::swap](std::mem::swap) to move values.
     pub fn flip_y(&mut self) {
         if H > 0 {
             for y in 0..H {
@@ -85,6 +119,8 @@ impl<T, const W: usize, const H: usize> ConstGrid<T, W, H> {
 }
 
 impl<T: Default + Copy, const W: usize, const H: usize> ConstGrid<T, W, H> {
+    /// Rotate the grid 90º clockwise and write to the target grid. If no target
+    /// is provided, a new one with the correct dimensions will be returned.
     pub fn rotate_right(&self, target: Option<ConstGrid<T, H, W>>) -> ConstGrid<T, H, W> {
         let mut target = target.unwrap_or_else(|| ConstGrid::<T, H, W>::default());
         let h = (H - 1) as i32;
@@ -94,6 +130,8 @@ impl<T: Default + Copy, const W: usize, const H: usize> ConstGrid<T, W, H> {
         target
     }
 
+    /// Rotate the grid 90º counter-clockwise and write to the target grid. If no
+    /// target is provided, a new one with the correct dimensions will be returned.
     pub fn rotate_left(&self, target: Option<ConstGrid<T, H, W>>) -> ConstGrid<T, H, W> {
         let mut target = target.unwrap_or_else(|| ConstGrid::<T, H, W>::default());
         let w = (W - 1) as i32;

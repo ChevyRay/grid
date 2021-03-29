@@ -2,6 +2,7 @@ use crate::Grid;
 use math::{Int2, IntRectIter};
 use std::marker::PhantomData;
 
+/// Immutable iterator over a region of a grid.
 pub struct GridIter<'a, T, G: Grid<T>> {
     pub(crate) grid: &'a G,
     pub(crate) iter: IntRectIter,
@@ -20,6 +21,7 @@ impl<'a, T: 'a, G: Grid<T>> Iterator for GridIter<'a, T, G> {
     }
 }
 
+/// Mutable iterator over a region of a grid.
 pub struct GridIterMut<'a, T, G: Grid<T>> {
     pub(crate) grid: &'a mut G,
     pub(crate) iter: IntRectIter,
@@ -39,6 +41,7 @@ impl<'a, T: 'a, G: Grid<T>> Iterator for GridIterMut<'a, T, G> {
     }
 }
 
+/// Unchecked immutable iterator over a region of a grid.
 pub struct GridIterUnchecked<'a, T, G: Grid<T>> {
     pub(crate) grid: &'a G,
     pub(crate) iter: IntRectIter,
@@ -54,6 +57,7 @@ impl<'a, T: 'a, G: Grid<T>> Iterator for GridIterUnchecked<'a, T, G> {
     }
 }
 
+/// Unchecked mutable iterator over a region of a grid.
 pub struct GridIterUncheckedMut<'a, T, G: Grid<T>> {
     pub(crate) grid: &'a mut G,
     pub(crate) iter: IntRectIter,
