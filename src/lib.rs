@@ -1,5 +1,5 @@
 //! # Grid
-//! A Rust library with 2D grid data structures. Not ready for public use, these are completely untested and mostly just me experimenting with an API structure for this. They also use unsafe code to speed up some operations, but I haven't fully tested these to guarantee their safety in some circumstances.
+//! A WIP Rust library with 2D grid data structures. Not ready for public use, these are completely untested and mostly just me experimenting with an API structure for this. They also use unsafe code to speed up some operations, but I haven't fully tested these to guarantee their safety in some circumstances.
 //!
 //! There are currently 3 different types of grids, each which implements the [`Grid<T>`](crate::Grid) trait:
 //!
