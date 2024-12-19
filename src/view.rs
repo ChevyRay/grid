@@ -69,7 +69,9 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
     #[inline]
     fn row_slice(&self, y: usize) -> Option<&[T]> {
         if y < self.h {
-            self.grid.row_slice(self.y + y)
+            self.grid
+                .row_slice(self.y + y)
+                .and_then(|s| s.get(self.x..(self.x + self.w)))
         } else {
             None
         }
@@ -142,7 +144,9 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridViewMut<'a, T, G> {
     #[inline]
     fn row_slice(&self, y: usize) -> Option<&[T]> {
         if y < self.h {
-            self.grid.row_slice(self.y + y)
+            self.grid
+                .row_slice(self.y + y)
+                .and_then(|s| s.get(self.x..(self.x + self.w)))
         } else {
             None
         }
@@ -182,7 +186,9 @@ impl<'a, T, G: GridMut<T>> GridMut<T> for GridViewMut<'a, T, G> {
     #[inline]
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]> {
         if y < self.h {
-            self.grid.row_slice_mut(self.y + y)
+            self.grid
+                .row_slice_mut(self.y + y)
+                .and_then(|s| s.get_mut(self.x..(self.x + self.w)))
         } else {
             None
         }

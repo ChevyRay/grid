@@ -8,11 +8,29 @@ pub struct GridBuf<T, S = Vec<T>> {
     marker: PhantomData<T>,
 }
 
+impl<T, S> GridBuf<T, S> {
+    #[inline]
+    pub fn with_store(width: usize, height: usize, store: S) -> Self
+    where
+        S: AsRef<[T]>,
+    {
+        let len = width.checked_mul(height).expect("grid capacity overflow");
+        assert_eq!(len, store.as_ref().len());
+        Self {
+            width,
+            height,
+            store,
+            marker: PhantomData,
+        }
+    }
+}
+
 impl<T> GridBuf<T, Vec<T>> {
     #[inline]
     pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, fill: F) -> Self {
+        let len = width.checked_mul(height).expect("grid capacity overflow");
         let mut store = Vec::new();
-        store.resize_with(width * height, fill);
+        store.resize_with(len, fill);
         Self {
             width,
             height,
@@ -95,11 +113,13 @@ impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut<T> for GridBuf<T, S> {
             .and_then(|i| self.as_mut_slice().get_mut(i))
     }
 
+    #[inline]
     unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut T {
         let i = y.unchecked_mul(self.width).unchecked_add(x);
         self.as_mut_slice().get_unchecked_mut(i)
     }
 
+    #[inline]
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]> {
         let w = self.width;
         y.checked_mul(w)

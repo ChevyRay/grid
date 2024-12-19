@@ -42,6 +42,17 @@ pub trait GridMut<T>: Grid<T> {
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]>;
 
     #[inline]
+    fn set(&mut self, x: usize, y: usize, value: T) -> Option<T> {
+        self.get_mut(x, y)
+            .map(|curr| std::mem::replace(curr, value))
+    }
+
+    #[inline]
+    unsafe fn set_unchecked(&mut self, x: usize, y: usize, value: T) -> T {
+        std::mem::replace(self.get_unchecked_mut(x, y), value)
+    }
+
+    #[inline]
     fn view_mut(
         &mut self,
         x: usize,
