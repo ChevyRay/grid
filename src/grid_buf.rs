@@ -1,4 +1,4 @@
-use crate::Grid;
+use crate::{Grid, GridMut};
 use std::marker::PhantomData;
 
 pub struct GridBuf<T, S = Vec<T>> {
@@ -72,12 +72,37 @@ impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
     #[inline]
     unsafe fn get_unchecked(&self, x: usize, y: usize) -> &T {
         let i = y.unchecked_mul(self.width).unchecked_add(x);
-        self.store.as_ref().get_unchecked(i)
+        self.as_slice().get_unchecked(i)
     }
 
     #[inline]
     fn row_slice(&self, y: usize) -> Option<&[T]> {
         y.checked_mul(self.width)
-            .and_then(|i| self.as_slice().get(i..self.width))
+            .and_then(|i| self.as_slice().get(i..(i + self.width)))
+    }
+}
+
+impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut<T> for GridBuf<T, S> {
+    #[inline]
+    fn root_mut(&mut self) -> &mut Self::Root {
+        self
+    }
+
+    #[inline]
+    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
+        y.checked_mul(self.width)
+            .and_then(|y| y.checked_add(x))
+            .and_then(|i| self.as_mut_slice().get_mut(i))
+    }
+
+    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut T {
+        let i = y.unchecked_mul(self.width).unchecked_add(x);
+        self.as_mut_slice().get_unchecked_mut(i)
+    }
+
+    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]> {
+        let w = self.width;
+        y.checked_mul(w)
+            .and_then(|i| self.as_mut_slice().get_mut(i..(i + w)))
     }
 }
