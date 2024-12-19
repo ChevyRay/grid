@@ -1,4 +1,20 @@
 use crate::{GridView, GridViewMut};
+use std::ops::{Bound, RangeBounds};
+
+fn bound_to_range(bound: impl RangeBounds<usize>, max: usize) -> Option<(usize, usize)> {
+    let lo = match bound.start_bound() {
+        Bound::Included(&lo) => lo,
+        Bound::Excluded(&lo) => lo.checked_add(1)?,
+        Bound::Unbounded => 0,
+    };
+    let hi = match bound.end_bound() {
+        Bound::Included(&hi) => hi.checked_add(1)?,
+        Bound::Excluded(&hi) => hi,
+        Bound::Unbounded => max,
+    };
+    let len = hi.checked_sub(lo)?;
+    (lo + len <= max).then(|| (lo, len))
+}
 
 pub trait Grid<T> {
     type Root;
@@ -32,6 +48,21 @@ pub trait Grid<T> {
         } else {
             None
         }
+    }
+
+    fn range(
+        &self,
+        cols: impl RangeBounds<usize>,
+        rows: impl RangeBounds<usize>,
+    ) -> Option<GridView<'_, T, Self::Root>>
+    where
+        Self::Root: Grid<T>,
+    {
+        let (x, w) = bound_to_range(cols, self.width())?;
+        let (y, h) = bound_to_range(rows, self.height())?;
+        let x = self.root_x() + x;
+        let y = self.root_y() + y;
+        Some(GridView::new(self.root(), x, y, w, h))
     }
 }
 

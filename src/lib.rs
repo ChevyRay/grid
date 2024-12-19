@@ -48,7 +48,8 @@ fn test() {
 
     display(&grid);
 
-    let view = grid.view(0, 0, 3, 3).unwrap();
+    //let view = grid.view(0, 0, 3, 3).unwrap();
+    let view = grid.range(.., ..).unwrap();
 
     display(&view);
 
