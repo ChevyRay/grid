@@ -77,8 +77,16 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
         }
     }
 
-    #[inline]
-    fn view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<GridView<'_, T, Self::Root>> {
+    fn try_view(
+        &self,
+        x: usize,
+        y: usize,
+        w: usize,
+        h: usize,
+    ) -> Option<GridView<'_, T, Self::Root>>
+    where
+        Self::Root: Grid<T>,
+    {
         if x + w <= self.w && y + h <= self.h {
             Some(GridView::new(self.grid, self.x + x, self.y + y, w, h))
         } else {

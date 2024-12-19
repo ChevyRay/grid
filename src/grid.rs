@@ -1,20 +1,4 @@
 use crate::{GridView, GridViewMut};
-use std::ops::{Bound, RangeBounds};
-
-fn bound_to_range(bound: impl RangeBounds<usize>, max: usize) -> Option<(usize, usize)> {
-    let lo = match bound.start_bound() {
-        Bound::Included(&lo) => lo,
-        Bound::Excluded(&lo) => lo.checked_add(1)?,
-        Bound::Unbounded => 0,
-    };
-    let hi = match bound.end_bound() {
-        Bound::Included(&hi) => hi.checked_add(1)?,
-        Bound::Excluded(&hi) => hi,
-        Bound::Unbounded => max,
-    };
-    let len = hi.checked_sub(lo)?;
-    (lo + len <= max).then(|| (lo, len))
-}
 
 pub trait Grid<T> {
     type Root;
@@ -37,7 +21,13 @@ pub trait Grid<T> {
     }
 
     #[inline]
-    fn view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<GridView<'_, T, Self::Root>>
+    fn try_view(
+        &self,
+        x: usize,
+        y: usize,
+        w: usize,
+        h: usize,
+    ) -> Option<GridView<'_, T, Self::Root>>
     where
         Self::Root: Grid<T>,
     {
@@ -50,7 +40,25 @@ pub trait Grid<T> {
         }
     }
 
-    fn range(
+    #[inline]
+    fn view(&self, x: usize, y: usize, w: usize, h: usize) -> GridView<'_, T, Self::Root>
+    where
+        Self::Root: Grid<T>,
+    {
+        self.try_view(x, y, w, h)
+            .expect("view does not overlap grid's bounds")
+    }
+
+    #[inline]
+    fn full_view(&self) -> GridView<'_, T, Self::Root>
+    where
+        Self::Root: Grid<T>,
+    {
+        GridView::new(self.root(), 0, 0, self.width(), self.height())
+    }
+
+    // IDEA: getting views from ranges could also work
+    /*fn view(
         &self,
         cols: impl RangeBounds<usize>,
         rows: impl RangeBounds<usize>,
@@ -58,12 +66,26 @@ pub trait Grid<T> {
     where
         Self::Root: Grid<T>,
     {
+        fn bound_to_range(bound: impl RangeBounds<usize>, max: usize) -> Option<(usize, usize)> {
+            let lo = match bound.start_bound() {
+                Bound::Included(&lo) => lo,
+                Bound::Excluded(&lo) => lo.checked_add(1)?,
+                Bound::Unbounded => 0,
+            };
+            let hi = match bound.end_bound() {
+                Bound::Included(&hi) => hi.checked_add(1)?,
+                Bound::Excluded(&hi) => hi,
+                Bound::Unbounded => max,
+            };
+            let len = hi.checked_sub(lo)?;
+            (lo + len <= max).then(|| (lo, len))
+        }
         let (x, w) = bound_to_range(cols, self.width())?;
         let (y, h) = bound_to_range(rows, self.height())?;
         let x = self.root_x() + x;
         let y = self.root_y() + y;
         Some(GridView::new(self.root(), x, y, w, h))
-    }
+    }*/
 }
 
 pub trait GridMut<T>: Grid<T> {
@@ -84,7 +106,7 @@ pub trait GridMut<T>: Grid<T> {
     }
 
     #[inline]
-    fn view_mut(
+    fn try_view_mut(
         &mut self,
         x: usize,
         y: usize,
@@ -101,5 +123,24 @@ pub trait GridMut<T>: Grid<T> {
         } else {
             None
         }
+    }
+
+    #[inline]
+    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> GridViewMut<'_, T, Self::Root>
+    where
+        Self::Root: GridMut<T>,
+    {
+        self.try_view_mut(x, y, w, h)
+            .expect("view does not overlap grid's bounds")
+    }
+
+    #[inline]
+    fn full_view_mut(&mut self) -> GridViewMut<'_, T, Self::Root>
+    where
+        Self::Root: GridMut<T>,
+    {
+        let w = self.width();
+        let h = self.height();
+        GridViewMut::new(self.root_mut(), 0, 0, w, h)
     }
 }

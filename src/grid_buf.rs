@@ -23,6 +23,22 @@ impl<T, S> GridBuf<T, S> {
             marker: PhantomData,
         }
     }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[T]
+    where
+        S: AsRef<[T]>,
+    {
+        self.store.as_ref()
+    }
+
+    #[inline]
+    pub fn as_mut_slice(&mut self) -> &mut [T]
+    where
+        S: AsMut<[T]>,
+    {
+        self.store.as_mut()
+    }
 }
 
 impl<T> GridBuf<T, Vec<T>> {
@@ -45,20 +61,6 @@ impl<T> GridBuf<T, Vec<T>> {
         T: Default,
     {
         Self::new_with(width, height, T::default)
-    }
-}
-
-impl<T, S: AsRef<[T]>> GridBuf<T, S> {
-    #[inline]
-    pub fn as_slice(&self) -> &[T] {
-        self.store.as_ref()
-    }
-}
-
-impl<T, S: AsMut<[T]>> GridBuf<T, S> {
-    #[inline]
-    pub fn as_mut_slice(&mut self) -> &mut [T] {
-        self.store.as_mut()
     }
 }
 

@@ -49,11 +49,11 @@ fn test() {
     display(&grid);
 
     //let view = grid.view(0, 0, 3, 3).unwrap();
-    let view = grid.range(.., ..).unwrap();
+    let view = grid.view(0, 0, 3, 3);
 
     display(&view);
 
-    let view2 = view.view(1, 1, 2, 2).unwrap();
+    let view2 = view.view(1, 1, 2, 2);
 
     display(&view2);
 }
