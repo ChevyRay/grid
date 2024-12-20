@@ -1,4 +1,4 @@
-use crate::{Grid, GridMut};
+use crate::{Grid, GridMut, Iter, IterMut};
 use std::marker::PhantomData;
 
 pub struct GridBuf<T, S = Vec<T>> {
@@ -132,5 +132,25 @@ impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut for GridBuf<T, S> {
         let w = self.width;
         y.checked_mul(w)
             .and_then(|i| self.as_mut_slice().get_mut(i..(i + w)))
+    }
+}
+
+impl<'a, T, S: AsRef<[T]>> IntoIterator for &'a GridBuf<T, S> {
+    type Item = (&'a T, usize, usize);
+    type IntoIter = Iter<'a, GridBuf<T, S>>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+impl<'a, T, S: AsRef<[T]> + AsMut<[T]>> IntoIterator for &'a mut GridBuf<T, S> {
+    type Item = (&'a mut T, usize, usize);
+    type IntoIter = IterMut<'a, GridBuf<T, S>>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter_mut()
     }
 }
