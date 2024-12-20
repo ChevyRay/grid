@@ -56,9 +56,8 @@ impl<'a, G: GridMut> Iterator for IterMut<'a, G> {
             self.x = 0;
             self.y += 1;
         }
-        // SAFETY: this iterator has a mutable reference to the grid,
-        // so as long as it exists, the mutable reference to the
-        // value fetched from inside the grid will also be valid.
+        // SAFETY: this iterator has a mutable reference to the grid, so as long as it exists, the
+        // mutable reference to the value fetched from inside the grid will also be valid.
         Some((unsafe { &mut *val }, x, y))
     }
 }

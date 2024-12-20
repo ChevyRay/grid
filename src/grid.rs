@@ -8,7 +8,14 @@ pub trait Grid {
     fn width(&self) -> usize;
     fn height(&self) -> usize;
     fn get(&self, x: usize, y: usize) -> Option<&Self::Item>;
+
+    /// # Safety
+    /// Calling this method with an out-of-bounds coord is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item;
+
     fn row_slice(&self, y: usize) -> Option<&[Self::Item]>;
 
     #[inline]
@@ -80,7 +87,15 @@ pub trait Grid {
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
     fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item>;
+
+    /// # Safety
+    ///
+    /// Calling this method with an out-of-bounds coord is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item;
+
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]>;
 
     #[inline]
@@ -89,6 +104,12 @@ pub trait GridMut: Grid {
             .map(|curr| std::mem::replace(curr, value))
     }
 
+    /// # Safety
+    ///
+    /// Calling this method with an out-of-bounds coord is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     #[inline]
     unsafe fn set_unchecked(&mut self, x: usize, y: usize, value: Self::Item) -> Self::Item {
         std::mem::replace(self.get_unchecked_mut(x, y), value)

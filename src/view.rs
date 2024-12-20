@@ -25,7 +25,7 @@ impl<'a, G> GridView<'a, G> {
     }
 }
 
-impl<'a, G: Grid> Grid for GridView<'a, G> {
+impl<G: Grid> Grid for GridView<'_, G> {
     type Item = G::Item;
     type Root = G;
 
@@ -93,7 +93,7 @@ impl<'a, G: GridMut> GridViewMut<'a, G> {
     }
 }
 
-impl<'a, G: Grid> Grid for GridViewMut<'a, G> {
+impl<G: Grid> Grid for GridViewMut<'_, G> {
     type Item = G::Item;
     type Root = G;
 
@@ -148,7 +148,7 @@ impl<'a, G: Grid> Grid for GridViewMut<'a, G> {
     }
 }
 
-impl<'a, G: GridMut> GridMut for GridViewMut<'a, G> {
+impl<G: GridMut> GridMut for GridViewMut<'_, G> {
     #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self.grid
