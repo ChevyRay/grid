@@ -62,6 +62,11 @@ impl<T> GridBuf<T, Vec<T>> {
     {
         Self::new_with(width, height, T::default)
     }
+
+    #[inline]
+    pub fn into_vec(self) -> Vec<T> {
+        self.store
+    }
 }
 
 impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
