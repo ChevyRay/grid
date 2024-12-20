@@ -2,6 +2,7 @@
 mod grid;
 mod grid_buf;
 //mod region;
+pub mod iter;
 mod view;
 
 //pub use coord::*;
