@@ -69,7 +69,8 @@ impl<T> GridBuf<T, Vec<T>> {
     }
 }
 
-impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
+impl<T, S: AsRef<[T]>> Grid for GridBuf<T, S> {
+    type Item = T;
     type Root = Self;
 
     #[inline]
@@ -88,46 +89,46 @@ impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
     }
 
     #[inline]
-    fn get(&self, x: usize, y: usize) -> Option<&T> {
+    fn get(&self, x: usize, y: usize) -> Option<&Self::Item> {
         y.checked_mul(self.width)
             .and_then(|y| y.checked_add(x))
             .and_then(|i| self.as_slice().get(i))
     }
 
     #[inline]
-    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &T {
+    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item {
         let i = y.unchecked_mul(self.width).unchecked_add(x);
         self.as_slice().get_unchecked(i)
     }
 
     #[inline]
-    fn row_slice(&self, y: usize) -> Option<&[T]> {
+    fn row_slice(&self, y: usize) -> Option<&[Self::Item]> {
         y.checked_mul(self.width)
             .and_then(|i| self.as_slice().get(i..(i + self.width)))
     }
 }
 
-impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut<T> for GridBuf<T, S> {
+impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut for GridBuf<T, S> {
     #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self
     }
 
     #[inline]
-    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
+    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item> {
         y.checked_mul(self.width)
             .and_then(|y| y.checked_add(x))
             .and_then(|i| self.as_mut_slice().get_mut(i))
     }
 
     #[inline]
-    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut T {
+    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item {
         let i = y.unchecked_mul(self.width).unchecked_add(x);
         self.as_mut_slice().get_unchecked_mut(i)
     }
 
     #[inline]
-    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]> {
+    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]> {
         let w = self.width;
         y.checked_mul(w)
             .and_then(|i| self.as_mut_slice().get_mut(i..(i + w)))

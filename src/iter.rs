@@ -1,27 +1,20 @@
 use crate::{Grid, GridMut};
-use std::marker::PhantomData;
 
-pub struct Iter<'a, T, G> {
+pub struct Iter<'a, G> {
     grid: &'a G,
     x: usize,
     y: usize,
-    marker: PhantomData<T>,
 }
 
-impl<'a, T, G> Iter<'a, T, G> {
+impl<'a, G> Iter<'a, G> {
     #[inline]
     pub fn new(grid: &'a G) -> Self {
-        Self {
-            grid,
-            x: 0,
-            y: 0,
-            marker: PhantomData,
-        }
+        Self { grid, x: 0, y: 0 }
     }
 }
 
-impl<'a, T: 'a, G: Grid<T>> Iterator for Iter<'a, T, G> {
-    type Item = (&'a T, usize, usize);
+impl<'a, G: Grid> Iterator for Iter<'a, G> {
+    type Item = (&'a G::Item, usize, usize);
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
@@ -37,31 +30,25 @@ impl<'a, T: 'a, G: Grid<T>> Iterator for Iter<'a, T, G> {
     }
 }
 
-pub struct IterMut<'a, T, G> {
+pub struct IterMut<'a, G> {
     grid: &'a mut G,
     x: usize,
     y: usize,
-    marker: PhantomData<T>,
 }
 
-impl<'a, T, G> IterMut<'a, T, G> {
+impl<'a, G> IterMut<'a, G> {
     #[inline]
     pub fn new(grid: &'a mut G) -> Self {
-        Self {
-            grid,
-            x: 0,
-            y: 0,
-            marker: PhantomData,
-        }
+        Self { grid, x: 0, y: 0 }
     }
 }
 
-impl<'a, T: 'a, G: GridMut<T>> Iterator for IterMut<'a, T, G> {
-    type Item = (&'a mut T, usize, usize);
+impl<'a, G: GridMut> Iterator for IterMut<'a, G> {
+    type Item = (&'a mut G::Item, usize, usize);
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        let val: *mut T = self.grid.get_mut(self.x, self.y)?;
+        let val: *mut G::Item = self.grid.get_mut(self.x, self.y)?;
         let x = self.x;
         let y = self.y;
         self.x += 1;

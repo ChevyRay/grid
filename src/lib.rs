@@ -14,7 +14,7 @@ pub use view::*;
 #[test]
 fn test() {
     use std::fmt::{Debug, Write};
-    fn display<T: Debug, G: Grid<T>>(grid: &G) {
+    fn display<T: Debug, G: Grid<Item = T>>(grid: &G) {
         let mut s = String::new();
         let mut len = 0;
         for y in 0..grid.height() {

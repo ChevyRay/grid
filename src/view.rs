@@ -1,26 +1,17 @@
 use crate::{Grid, GridMut};
-use std::marker::PhantomData;
 
-pub struct GridView<'a, T, G: Grid<T>> {
+pub struct GridView<'a, G> {
     grid: &'a G,
     x: usize,
     y: usize,
     w: usize,
     h: usize,
-    marker: PhantomData<T>,
 }
 
-impl<'a, T, G: Grid<T>> GridView<'a, T, G> {
+impl<'a, G> GridView<'a, G> {
     #[inline]
     pub(crate) fn new(grid: &'a G, x: usize, y: usize, w: usize, h: usize) -> Self {
-        Self {
-            grid,
-            x,
-            y,
-            w,
-            h,
-            marker: PhantomData,
-        }
+        Self { grid, x, y, w, h }
     }
 
     #[inline]
@@ -34,7 +25,8 @@ impl<'a, T, G: Grid<T>> GridView<'a, T, G> {
     }
 }
 
-impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
+impl<'a, G: Grid> Grid for GridView<'a, G> {
+    type Item = G::Item;
     type Root = G;
 
     #[inline]
@@ -53,7 +45,7 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
     }
 
     #[inline]
-    fn get(&self, x: usize, y: usize) -> Option<&T> {
+    fn get(&self, x: usize, y: usize) -> Option<&Self::Item> {
         if x < self.w && y < self.h {
             self.root().get(self.x + x, self.y + y)
         } else {
@@ -62,12 +54,12 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
     }
 
     #[inline]
-    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &T {
+    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item {
         self.root().get_unchecked(self.x + x, self.y + y)
     }
 
     #[inline]
-    fn row_slice(&self, y: usize) -> Option<&[T]> {
+    fn row_slice(&self, y: usize) -> Option<&[Self::Item]> {
         if y < self.h {
             self.grid
                 .row_slice(self.y + y)
@@ -77,16 +69,8 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
         }
     }
 
-    fn try_view(
-        &self,
-        x: usize,
-        y: usize,
-        w: usize,
-        h: usize,
-    ) -> Option<GridView<'_, T, Self::Root>>
-    where
-        Self::Root: Grid<T>,
-    {
+    #[inline]
+    fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<GridView<'_, Self::Root>> {
         if x + w <= self.w && y + h <= self.h {
             Some(GridView::new(self.grid, self.x + x, self.y + y, w, h))
         } else {
@@ -95,29 +79,22 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridView<'a, T, G> {
     }
 }
 
-pub struct GridViewMut<'a, T, G: Grid<T>> {
+pub struct GridViewMut<'a, G> {
     grid: &'a mut G,
     x: usize,
     y: usize,
     w: usize,
     h: usize,
-    marker: PhantomData<T>,
 }
 
-impl<'a, T, G: GridMut<T>> GridViewMut<'a, T, G> {
+impl<'a, G: GridMut> GridViewMut<'a, G> {
     pub(crate) fn new(grid: &'a mut G, x: usize, y: usize, w: usize, h: usize) -> Self {
-        Self {
-            grid,
-            x,
-            y,
-            w,
-            h,
-            marker: PhantomData,
-        }
+        Self { grid, x, y, w, h }
     }
 }
 
-impl<'a, T, G: Grid<T>> Grid<T> for GridViewMut<'a, T, G> {
+impl<'a, G: Grid> Grid for GridViewMut<'a, G> {
+    type Item = G::Item;
     type Root = G;
 
     #[inline]
@@ -136,7 +113,7 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridViewMut<'a, T, G> {
     }
 
     #[inline]
-    fn get(&self, x: usize, y: usize) -> Option<&T> {
+    fn get(&self, x: usize, y: usize) -> Option<&Self::Item> {
         if x < self.w && y < self.h {
             self.grid.get(self.x + x, self.y + y)
         } else {
@@ -145,12 +122,12 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridViewMut<'a, T, G> {
     }
 
     #[inline]
-    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &T {
+    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item {
         self.grid.get_unchecked(self.x + x, self.y + y)
     }
 
     #[inline]
-    fn row_slice(&self, y: usize) -> Option<&[T]> {
+    fn row_slice(&self, y: usize) -> Option<&[Self::Item]> {
         if y < self.h {
             self.grid
                 .row_slice(self.y + y)
@@ -171,14 +148,14 @@ impl<'a, T, G: Grid<T>> Grid<T> for GridViewMut<'a, T, G> {
     }
 }
 
-impl<'a, T, G: GridMut<T>> GridMut<T> for GridViewMut<'a, T, G> {
+impl<'a, G: GridMut> GridMut for GridViewMut<'a, G> {
     #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self.grid
     }
 
     #[inline]
-    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
+    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item> {
         if x < self.w && y < self.h {
             self.grid.get_mut(self.x + x, self.y + y)
         } else {
@@ -187,12 +164,12 @@ impl<'a, T, G: GridMut<T>> GridMut<T> for GridViewMut<'a, T, G> {
     }
 
     #[inline]
-    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut T {
+    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item {
         self.grid.get_unchecked_mut(self.x + x, self.y + y)
     }
 
     #[inline]
-    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [T]> {
+    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]> {
         if y < self.h {
             self.grid
                 .row_slice_mut(self.y + y)
