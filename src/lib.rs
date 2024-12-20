@@ -1,12 +1,12 @@
 //mod coord;
+mod buf_grid;
 mod grid;
-mod grid_buf;
 //mod region;
 mod view;
 
 //pub use coord::*;
+pub use buf_grid::*;
 pub use grid::*;
-pub use grid_buf::*;
 //ub use region::*;
 pub use view::*;
 
@@ -39,7 +39,7 @@ fn test() {
         println!();
     }
 
-    let mut grid = GridBuf::<usize>::new(5, 5);
+    let mut grid = BufGrid::<usize>::new(5, 5);
     for x in 0..grid.width() {
         for y in 0..grid.height() {
             *grid.get_mut(x, y).unwrap() = y * grid.width() + x;

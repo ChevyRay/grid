@@ -1,14 +1,14 @@
 use crate::{Grid, GridMut};
 use std::marker::PhantomData;
 
-pub struct GridBuf<T, S = Vec<T>> {
+pub struct BufGrid<T, S = Vec<T>> {
     width: usize,
     height: usize,
     store: S,
     marker: PhantomData<T>,
 }
 
-impl<T, S> GridBuf<T, S> {
+impl<T, S> BufGrid<T, S> {
     #[inline]
     pub fn with_store(width: usize, height: usize, store: S) -> Self
     where
@@ -41,7 +41,7 @@ impl<T, S> GridBuf<T, S> {
     }
 }
 
-impl<T> GridBuf<T, Vec<T>> {
+impl<T> BufGrid<T, Vec<T>> {
     #[inline]
     pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, fill: F) -> Self {
         let len = width.checked_mul(height).expect("grid capacity overflow");
@@ -64,7 +64,7 @@ impl<T> GridBuf<T, Vec<T>> {
     }
 }
 
-impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
+impl<T, S: AsRef<[T]>> Grid<T> for BufGrid<T, S> {
     type Root = Self;
 
     #[inline]
@@ -102,7 +102,7 @@ impl<T, S: AsRef<[T]>> Grid<T> for GridBuf<T, S> {
     }
 }
 
-impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut<T> for GridBuf<T, S> {
+impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut<T> for BufGrid<T, S> {
     #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self
