@@ -1,4 +1,5 @@
 use crate::GridMut;
+use std::iter::FusedIterator;
 
 pub struct IterMut<'a, G> {
     grid: &'a mut G,
@@ -30,4 +31,28 @@ impl<'a, G: GridMut> Iterator for IterMut<'a, G> {
         // mutable reference to the value fetched from inside the grid will also be valid.
         Some((unsafe { &mut *val }, x, y))
     }
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.len();
+        (len, Some(len))
+    }
+
+    #[inline]
+    fn count(self) -> usize
+    where
+        Self: Sized,
+    {
+        self.len()
+    }
 }
+
+impl<G: GridMut> ExactSizeIterator for IterMut<'_, G> {
+    #[inline]
+    fn len(&self) -> usize {
+        let w = self.grid.width();
+        let h = self.grid.height();
+        (h.saturating_sub(self.y + 1)) * w + (w - self.x)
+    }
+}
+
+impl<G: GridMut> FusedIterator for IterMut<'_, G> {}
