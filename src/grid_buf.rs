@@ -39,6 +39,11 @@ impl<T, S> GridBuf<T, S> {
     {
         self.store.as_mut()
     }
+
+    #[inline]
+    pub fn into_store(self) -> S {
+        self.store
+    }
 }
 
 impl<T> GridBuf<T, Vec<T>> {
@@ -61,11 +66,6 @@ impl<T> GridBuf<T, Vec<T>> {
         T: Default,
     {
         Self::new_with(width, height, T::default)
-    }
-
-    #[inline]
-    pub fn into_vec(self) -> Vec<T> {
-        self.store
     }
 }
 
