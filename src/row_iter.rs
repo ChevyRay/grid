@@ -6,13 +6,13 @@ pub struct RowIter<GridRef> {
     pub(crate) grid: GridRef,
     pub(crate) x: usize,
     pub(crate) y: usize,
-    pub(crate) w: usize,
+    pub(crate) r: usize,
 }
 
 impl<GridRef> RowIter<GridRef> {
     #[inline]
-    pub(crate) fn new(grid: GridRef, y: usize, w: usize) -> RowIter<GridRef> {
-        Self { grid, x: 0, y, w }
+    pub(crate) fn new(grid: GridRef, y: usize, r: usize) -> RowIter<GridRef> {
+        Self { grid, x: 0, y, r }
     }
 }
 
@@ -23,7 +23,7 @@ impl<'a, G: Grid> Iterator for RowIter<&'a G> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        if self.x < self.w {
+        if self.x < self.r {
             let x = self.x;
             self.x += 1;
             self.grid.get(x, self.y)
@@ -51,15 +51,19 @@ impl<'a, G: Grid> Iterator for RowIter<&'a G> {
     where
         Self: Sized,
     {
-        self.grid.get(self.w.checked_sub(1)?, self.y)
+        if self.x < self.r {
+            self.grid.get(self.r - 1, self.y)
+        } else {
+            None
+        }
     }
 }
 
 impl<'a, G: Grid> DoubleEndedIterator for RowIter<&'a G> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        if self.x > self.w {
-            self.w -= 1;
-            self.grid.get(self.w, self.y)
+        if self.x < self.r {
+            self.r -= 1;
+            self.grid.get(self.r, self.y)
         } else {
             None
         }
@@ -69,7 +73,7 @@ impl<'a, G: Grid> DoubleEndedIterator for RowIter<&'a G> {
 impl<'a, G: Grid> ExactSizeIterator for RowIter<&'a G> {
     #[inline]
     fn len(&self) -> usize {
-        self.w - self.x
+        self.r - self.x
     }
 }
 
@@ -82,7 +86,7 @@ impl<'a, G: GridMut> Iterator for RowIter<&'a mut G> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        if self.x < self.w {
+        if self.x < self.r {
             let item: *mut G::Item = self.grid.get_mut(self.x, self.y).unwrap();
             self.x += 1;
             Some(unsafe { &mut *item })
@@ -110,15 +114,19 @@ impl<'a, G: GridMut> Iterator for RowIter<&'a mut G> {
     where
         Self: Sized,
     {
-        self.grid.get_mut(self.w.checked_sub(1)?, self.y)
+        if self.x < self.r {
+            self.grid.get_mut(self.r - 1, self.y)
+        } else {
+            None
+        }
     }
 }
 
 impl<'a, G: GridMut> DoubleEndedIterator for RowIter<&'a mut G> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        if self.x > self.w {
-            self.w -= 1;
-            let item: *mut G::Item = self.grid.get_mut(self.w, self.y).unwrap();
+        if self.x < self.r {
+            let item: *mut G::Item = self.grid.get_mut(self.r, self.y).unwrap();
+            self.r -= 1;
             Some(unsafe { &mut *item })
         } else {
             None
@@ -129,7 +137,7 @@ impl<'a, G: GridMut> DoubleEndedIterator for RowIter<&'a mut G> {
 impl<'a, G: GridMut> ExactSizeIterator for RowIter<&'a mut G> {
     #[inline]
     fn len(&self) -> usize {
-        self.w - self.x
+        self.r - self.x
     }
 }
 

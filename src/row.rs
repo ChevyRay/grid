@@ -67,13 +67,7 @@ impl<'a, G: Grid> Row<&'a G> {
 
     #[inline]
     pub fn iter(&self) -> RowIter<&'a G> {
-        let w = self.len();
-        RowIter {
-            grid: self.grid,
-            x: 0,
-            y: self.y,
-            w,
-        }
+        RowIter::new(self.grid, self.y, self.len())
     }
 }
 
@@ -184,14 +178,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
 
     #[inline]
     pub fn iter_mut(&'a mut self) -> RowIter<&'a mut G> {
-        let w = self.len();
-        let y = self.y;
-        RowIter {
-            grid: self.grid,
-            x: 0,
-            y,
-            w,
-        }
+        RowIter::new(self.grid, self.y, self.len())
     }
 }
 
