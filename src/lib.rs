@@ -54,8 +54,10 @@ fn test() {
 
     let mut grid = GridBuf::with_store(5, 5, vec![0usize; 25]);
 
-    for (y, mut row) in grid.rows_mut().rev().enumerate() {
-        row.fill(y);
+    for (y, mut row) in grid.rows_mut().enumerate() {
+        for (i, val) in row.iter_mut().enumerate() {
+            *val = i;
+        }
     }
 
     /*for x in 0..grid.width() {
@@ -74,17 +76,5 @@ fn test() {
         dst.copy_from(src);
     }
 
-    let mut crop = targ.view(1, 1, 3, 3).to_grid_buf([0usize; 9]);
-    let mut crop = targ.view(1, 1, 3, 3).to_arr_buf::<9>();
-
-    display(&grid);
-
-    //let view = grid.view(0, 0, 3, 3).unwrap();
-    let view = grid.view(0, 0, 3, 3);
-
-    display(&view);
-
-    let view2 = view.view(1, 1, 2, 2);
-
-    display(&view2);
+    display(&targ);
 }
