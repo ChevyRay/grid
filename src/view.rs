@@ -25,18 +25,6 @@ impl<'a, G> View<&'a G> {
     pub const fn y(&self) -> usize {
         self.y
     }
-
-    #[inline]
-    pub fn to_grid_buf<S>(&self, store: S) -> GridBuf<G::Item, S>
-    where
-        G: Grid<Item: Clone>,
-        S: AsRef<[G::Item]> + AsMut<[G::Item]>,
-        Self: Sized,
-    {
-        let mut buf = GridBuf::with_store(self.w, self.h, store);
-        buf.clone_from(self);
-        buf
-    }
 }
 
 impl<'a, G: Grid> Grid for View<&'a G> {

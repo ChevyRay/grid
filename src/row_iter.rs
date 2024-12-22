@@ -7,6 +7,21 @@ pub struct RowIter<RowRef> {
     pub(crate) w: usize,
 }
 
+impl<'a, G: Grid> Iterator for RowIter<Row<&'a G>> {
+    type Item = &'a G::Item;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.x < self.w {
+            let val: *const G::Item = self.row.get(self.x).unwrap();
+            self.x += 1;
+            Some(unsafe { &*val })
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a, G: Grid> Iterator for RowIter<&'a Row<&'a G>> {
     type Item = &'a G::Item;
 

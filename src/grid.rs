@@ -1,4 +1,4 @@
-use crate::{GridBuf, GridIter, Rows, View};
+use crate::{GridBuf, GridIter, GridMut, Rows, View};
 
 pub trait Grid {
     type Item;
@@ -48,6 +48,18 @@ pub trait Grid {
         Self::Root: Grid<Item = Self::Item>,
     {
         self.view(0, 0, self.width(), self.height())
+    }
+
+    #[inline]
+    fn to_grid_buf<S>(&self, store: S) -> GridBuf<Self::Item, S>
+    where
+        S: AsRef<[Self::Item]> + AsMut<[Self::Item]>,
+        Self::Item: Clone,
+        Self: Sized,
+    {
+        let mut buf = GridBuf::with_store(self.width(), self.height(), store);
+        buf.clone_from(self);
+        buf
     }
 
     fn to_vec_grid(&self) -> GridBuf<Self::Item, Vec<Self::Item>>
