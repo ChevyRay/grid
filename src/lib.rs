@@ -34,6 +34,7 @@
 
 mod col;
 mod col_iter;
+mod cols_iter;
 mod grid;
 mod grid_buf;
 mod grid_iter;

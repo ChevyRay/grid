@@ -1,4 +1,5 @@
-use crate::{GridBuf, GridIter, GridMut, Row, RowsIter, View};
+use crate::cols_iter::ColsIter;
+use crate::{Col, GridBuf, GridIter, GridMut, Row, RowsIter, View};
 
 pub trait Grid {
     type Item;
@@ -104,16 +105,6 @@ pub trait Grid {
     }
 
     #[inline]
-    fn try_row(&self, y: usize) -> Option<Row<&Self>> {
-        (y < self.height()).then(|| Row::new(self, y))
-    }
-
-    #[inline]
-    fn row(&self, y: usize) -> Row<&Self> {
-        self.try_row(y).expect("row index out of bounds")
-    }
-
-    #[inline]
     fn iter(&self) -> GridIter<'_, Self>
     where
         Self: Sized,
@@ -122,11 +113,39 @@ pub trait Grid {
     }
 
     #[inline]
+    fn cols(&self) -> ColsIter<&Self>
+    where
+        Self: Sized,
+    {
+        ColsIter::new(self, self.width())
+    }
+
+    #[inline]
+    fn try_col(&self, x: usize) -> Option<Col<&Self>> {
+        (x < self.width()).then(|| Col::new(self, x))
+    }
+
+    #[inline]
+    fn col(&self, x: usize) -> Col<&Self> {
+        self.try_col(x).expect("column index out of bounds")
+    }
+
+    #[inline]
     fn rows(&self) -> RowsIter<&Self>
     where
         Self: Sized,
     {
         RowsIter::new(self, self.height())
+    }
+
+    #[inline]
+    fn try_row(&self, y: usize) -> Option<Row<&Self>> {
+        (y < self.height()).then(|| Row::new(self, y))
+    }
+
+    #[inline]
+    fn row(&self, y: usize) -> Row<&Self> {
+        self.try_row(y).expect("row index out of bounds")
     }
 
     // IDEA: getting views from ranges could also work

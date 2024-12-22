@@ -1,4 +1,4 @@
-use crate::{ColIter, Grid, GridMut, Row};
+use crate::{ColIter, Grid, GridMut};
 use std::ops::Deref;
 
 #[derive(Clone)]
