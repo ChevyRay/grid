@@ -115,8 +115,8 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         if let Some(slice) = self.as_mut_slice() {
             slice.fill_with(f);
         } else {
-            for x in 0..self.len() {
-                *self.get_mut(x).unwrap() = f();
+            for val in self.iter_mut() {
+                *val = f();
             }
         }
     }

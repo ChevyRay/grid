@@ -32,6 +32,8 @@
 //! assert_eq!(letters.get(2, 0), Some(&'X'));
 //! ```
 
+mod col;
+mod col_iter;
 mod grid;
 mod grid_buf;
 mod grid_iter;
@@ -42,6 +44,8 @@ mod row_iter;
 mod rows_iter;
 mod view;
 
+pub use col::*;
+pub use col_iter::*;
 pub use grid::*;
 pub use grid_buf::*;
 pub use grid_iter::*;
