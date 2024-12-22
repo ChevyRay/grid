@@ -19,6 +19,7 @@ impl<'a, G> View<&'a G> {
         self.y
     }
 
+    #[inline]
     pub fn to_grid_buf<S>(&self, store: S) -> GridBuf<G::Item, S>
     where
         G: Grid<Item: Clone>,

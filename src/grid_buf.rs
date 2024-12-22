@@ -164,3 +164,15 @@ impl<'a, T, S: AsRef<[T]> + AsMut<[T]>> IntoIterator for &'a mut GridBuf<T, S> {
         self.iter_mut()
     }
 }
+
+impl<T, S: Clone> Clone for GridBuf<T, S> {
+    #[inline]
+    fn clone(&self) -> Self {
+        Self {
+            width: self.width,
+            height: self.height,
+            store: self.store.clone(),
+            marker: PhantomData,
+        }
+    }
+}

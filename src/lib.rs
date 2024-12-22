@@ -43,17 +43,26 @@ fn test() {
         println!();
     }
 
-    let mut grid = GridBuf::with_store(4, 4, [0; 16]);
+    let mut grid = GridBuf::with_store(5, 5, vec![0usize; 25]);
 
-    display(&grid);
+    for (y, mut row) in grid.rows_mut().rev().enumerate() {
+        row.fill(y);
+    }
 
-    /*let mut data = vec![0usize; 25];
-    let mut grid = GridBuf::with_store(5, 5, data.as_mut_slice());
-    //let mut grid = BufGrid::<usize>::new(5, 5);
-    for x in 0..grid.width() {
+    /*for x in 0..grid.width() {
         for y in 0..grid.height() {
             *grid.get_mut(x, y).unwrap() = y * grid.width() + x;
         }
+    }*/
+
+    display(&grid);
+
+    //grid.rows_mut().last().unwrap().fill(9);
+
+    let mut targ = grid.clone();
+
+    for (mut dst, src) in targ.rows_mut().zip(grid.rows().rev()) {
+        dst.copy_from(src);
     }
 
     display(&grid);
@@ -65,5 +74,5 @@ fn test() {
 
     let view2 = view.view(1, 1, 2, 2);
 
-    display(&view2);*/
+    display(&view2);
 }
