@@ -75,6 +75,7 @@ fn test() {
     }
 
     let mut crop = targ.view(1, 1, 3, 3).to_grid_buf([0usize; 9]);
+    let mut crop = targ.view(1, 1, 3, 3).to_arr_buf::<9>();
 
     display(&grid);
 
