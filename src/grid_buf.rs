@@ -1,4 +1,4 @@
-use crate::{Grid, GridMut, Iter, IterMut};
+use crate::{Grid, GridIter, GridIterMut, GridMut};
 use std::marker::PhantomData;
 
 pub struct GridBuf<T, S = Vec<T>> {
@@ -147,7 +147,7 @@ impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut for GridBuf<T, S> {
 
 impl<'a, T, S: AsRef<[T]>> IntoIterator for &'a GridBuf<T, S> {
     type Item = (&'a T, usize, usize);
-    type IntoIter = Iter<'a, GridBuf<T, S>>;
+    type IntoIter = GridIter<'a, GridBuf<T, S>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
@@ -157,7 +157,7 @@ impl<'a, T, S: AsRef<[T]>> IntoIterator for &'a GridBuf<T, S> {
 
 impl<'a, T, S: AsRef<[T]> + AsMut<[T]>> IntoIterator for &'a mut GridBuf<T, S> {
     type Item = (&'a mut T, usize, usize);
-    type IntoIter = IterMut<'a, GridBuf<T, S>>;
+    type IntoIter = GridIterMut<'a, GridBuf<T, S>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {

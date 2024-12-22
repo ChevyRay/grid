@@ -1,20 +1,20 @@
 use crate::GridMut;
 use std::iter::FusedIterator;
 
-pub struct IterMut<'a, G> {
+pub struct GridIterMut<'a, G> {
     grid: &'a mut G,
     x: usize,
     y: usize,
 }
 
-impl<'a, G> IterMut<'a, G> {
+impl<'a, G> GridIterMut<'a, G> {
     #[inline]
     pub(crate) fn new(grid: &'a mut G) -> Self {
         Self { grid, x: 0, y: 0 }
     }
 }
 
-impl<'a, G: GridMut> Iterator for IterMut<'a, G> {
+impl<'a, G: GridMut> Iterator for GridIterMut<'a, G> {
     type Item = (&'a mut G::Item, usize, usize);
 
     #[inline]
@@ -46,7 +46,7 @@ impl<'a, G: GridMut> Iterator for IterMut<'a, G> {
     }
 }
 
-impl<G: GridMut> ExactSizeIterator for IterMut<'_, G> {
+impl<G: GridMut> ExactSizeIterator for GridIterMut<'_, G> {
     #[inline]
     fn len(&self) -> usize {
         let w = self.grid.width();
@@ -55,4 +55,4 @@ impl<G: GridMut> ExactSizeIterator for IterMut<'_, G> {
     }
 }
 
-impl<G: GridMut> FusedIterator for IterMut<'_, G> {}
+impl<G: GridMut> FusedIterator for GridIterMut<'_, G> {}

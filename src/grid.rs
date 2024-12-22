@@ -1,4 +1,4 @@
-use crate::{GridBuf, Iter, Rows, View};
+use crate::{GridBuf, GridIter, Rows, View};
 
 pub trait Grid {
     type Item;
@@ -30,13 +30,7 @@ pub trait Grid {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
-            Some(View {
-                grid: self.root(),
-                x,
-                y,
-                w,
-                h,
-            })
+            Some(View::new(self.root(), x, y, w, h))
         } else {
             None
         }
@@ -67,11 +61,11 @@ pub trait Grid {
     }
 
     #[inline]
-    fn iter(&self) -> Iter<'_, Self>
+    fn iter(&self) -> GridIter<'_, Self>
     where
         Self: Sized,
     {
-        Iter::new(self)
+        GridIter::new(self)
     }
 
     #[inline]

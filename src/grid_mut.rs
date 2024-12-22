@@ -1,4 +1,4 @@
-use crate::{Grid, IterMut, Rows, View};
+use crate::{Grid, GridIterMut, Rows, View};
 
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
@@ -42,13 +42,7 @@ pub trait GridMut: Grid {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
-            Some(View {
-                grid: self.root_mut(),
-                x,
-                y,
-                w,
-                h,
-            })
+            Some(View::new(self.root_mut(), x, y, w, h))
         } else {
             None
         }
@@ -66,11 +60,11 @@ pub trait GridMut: Grid {
     }
 
     #[inline]
-    fn iter_mut(&mut self) -> IterMut<'_, Self>
+    fn iter_mut(&mut self) -> GridIterMut<'_, Self>
     where
         Self: Sized,
     {
-        IterMut::new(self)
+        GridIterMut::new(self)
     }
 
     #[inline]

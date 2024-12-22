@@ -4,6 +4,8 @@ mod grid_mut;
 mod iter;
 mod iter_mut;
 mod row;
+mod row_iter;
+mod rows;
 mod view;
 
 pub use grid::*;
@@ -12,7 +14,14 @@ pub use grid_mut::*;
 pub use iter::*;
 pub use iter_mut::*;
 pub use row::*;
+pub use row_iter::*;
+pub use rows::*;
 pub use view::*;
+
+// Wrapped<Coord<usize>>
+// wrapped((0, 0))
+// coord(0, 0)
+// icoord(0, 0)
 
 #[test]
 fn test() {

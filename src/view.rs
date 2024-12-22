@@ -1,11 +1,18 @@
 use crate::{Grid, GridBuf, GridMut};
 
 pub struct View<GridRef> {
-    pub(crate) grid: GridRef,
-    pub(crate) x: usize,
-    pub(crate) y: usize,
-    pub(crate) w: usize,
-    pub(crate) h: usize,
+    grid: GridRef,
+    x: usize,
+    y: usize,
+    w: usize,
+    h: usize,
+}
+
+impl<GridRef> View<GridRef> {
+    #[inline]
+    pub fn new(grid: GridRef, x: usize, y: usize, w: usize, h: usize) -> Self {
+        Self { grid, x, y, w, h }
+    }
 }
 
 impl<'a, G> View<&'a G> {
@@ -85,21 +92,6 @@ impl<'a, G: Grid> Grid for View<&'a G> {
             None
         }
     }
-
-    #[inline]
-    fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<&Self::Root>> {
-        if x + w <= self.w && y + h <= self.h {
-            Some(View {
-                grid: self.grid,
-                x: self.x + x,
-                y: self.y + y,
-                w,
-                h,
-            })
-        } else {
-            None
-        }
-    }
 }
 
 impl<'a, G: Grid> Grid for View<&'a mut G> {
@@ -155,21 +147,6 @@ impl<'a, G: Grid> Grid for View<&'a mut G> {
             None
         }
     }
-
-    #[inline]
-    fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<&Self::Root>> {
-        if x + w <= self.w && y + h <= self.h {
-            Some(View {
-                grid: self.grid,
-                x: self.x + x,
-                y: self.y + y,
-                w,
-                h,
-            })
-        } else {
-            None
-        }
-    }
 }
 
 impl<'a, G: GridMut> GridMut for View<&'a mut G> {
@@ -198,27 +175,6 @@ impl<'a, G: GridMut> GridMut for View<&'a mut G> {
             self.grid
                 .row_slice_mut(self.y + y)
                 .and_then(|s| s.get_mut(self.x..(self.x + self.w)))
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn try_view_mut(
-        &mut self,
-        x: usize,
-        y: usize,
-        w: usize,
-        h: usize,
-    ) -> Option<View<&mut Self::Root>> {
-        if x + w <= self.w && y + h <= self.h {
-            Some(View {
-                grid: self.grid,
-                x: self.x + x,
-                y: self.y + y,
-                w,
-                h,
-            })
         } else {
             None
         }

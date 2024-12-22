@@ -2,20 +2,20 @@ use crate::Grid;
 use std::iter::FusedIterator;
 
 #[derive(Copy, Clone)]
-pub struct Iter<'a, G> {
+pub struct GridIter<'a, G> {
     grid: &'a G,
     x: usize,
     y: usize,
 }
 
-impl<'a, G> Iter<'a, G> {
+impl<'a, G> GridIter<'a, G> {
     #[inline]
     pub(crate) fn new(grid: &'a G) -> Self {
         Self { grid, x: 0, y: 0 }
     }
 }
 
-impl<'a, G: Grid> Iterator for Iter<'a, G> {
+impl<'a, G: Grid> Iterator for GridIter<'a, G> {
     type Item = (&'a G::Item, usize, usize);
 
     #[inline]
@@ -46,7 +46,7 @@ impl<'a, G: Grid> Iterator for Iter<'a, G> {
     }
 }
 
-impl<G: Grid> ExactSizeIterator for Iter<'_, G> {
+impl<G: Grid> ExactSizeIterator for GridIter<'_, G> {
     #[inline]
     fn len(&self) -> usize {
         let w = self.grid.width();
@@ -55,4 +55,4 @@ impl<G: Grid> ExactSizeIterator for Iter<'_, G> {
     }
 }
 
-impl<G: Grid> FusedIterator for Iter<'_, G> {}
+impl<G: Grid> FusedIterator for GridIter<'_, G> {}
