@@ -1,12 +1,12 @@
-use crate::{Grid, GridMut, Row};
+use crate::{Grid, GridMut};
 use std::iter::FusedIterator;
 
 #[derive(Clone)]
 pub struct RowIter<GridRef> {
-    pub(crate) grid: GridRef,
-    pub(crate) x: usize,
-    pub(crate) y: usize,
-    pub(crate) r: usize,
+    grid: GridRef,
+    x: usize,
+    y: usize,
+    r: usize,
 }
 
 impl<GridRef> RowIter<GridRef> {

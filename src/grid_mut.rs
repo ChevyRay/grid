@@ -78,12 +78,7 @@ pub trait GridMut: Grid {
     where
         Self: Sized,
     {
-        let h = self.height();
-        Rows {
-            grid: self,
-            y: 0,
-            h,
-        }
+        Rows::new(self, self.height())
     }
 
     fn fill_with<F: FnMut() -> Self::Item>(&mut self, mut f: F)

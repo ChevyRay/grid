@@ -3,11 +3,16 @@ use std::ops::Deref;
 
 #[derive(Clone)]
 pub struct Row<GridRef> {
-    pub(crate) grid: GridRef,
-    pub(crate) y: usize,
+    grid: GridRef,
+    y: usize,
 }
 
 impl<GridRef> Row<GridRef> {
+    #[inline]
+    pub(crate) fn new(grid: GridRef, y: usize) -> Self {
+        Self { grid, y }
+    }
+
     #[inline]
     pub fn index(&self) -> usize {
         self.y

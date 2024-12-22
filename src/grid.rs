@@ -117,11 +117,7 @@ pub trait Grid {
     where
         Self: Sized,
     {
-        Rows {
-            grid: self,
-            y: 0,
-            h: self.height(),
-        }
+        Rows::new(self, self.height())
     }
 
     // IDEA: getting views from ranges could also work
