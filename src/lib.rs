@@ -5,7 +5,7 @@ mod grid_iter_mut;
 mod grid_mut;
 mod row;
 mod row_iter;
-mod rows;
+mod rows_iter;
 mod view;
 
 pub use grid::*;
@@ -15,7 +15,7 @@ pub use grid_iter_mut::*;
 pub use grid_mut::*;
 pub use row::*;
 pub use row_iter::*;
-pub use rows::*;
+pub use rows_iter::*;
 pub use view::*;
 
 // Wrapped<Coord<usize>>

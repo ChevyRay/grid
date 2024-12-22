@@ -1,4 +1,4 @@
-use crate::{Grid, GridIterMut, Rows, View};
+use crate::{Grid, GridIterMut, RowsIter, View};
 
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
@@ -74,11 +74,11 @@ pub trait GridMut: Grid {
     }
 
     #[inline]
-    fn rows_mut(&mut self) -> Rows<&mut Self>
+    fn rows_mut(&mut self) -> RowsIter<&mut Self>
     where
         Self: Sized,
     {
-        Rows::new(self, self.height())
+        RowsIter::new(self, self.height())
     }
 
     fn fill_with<F: FnMut() -> Self::Item>(&mut self, mut f: F)

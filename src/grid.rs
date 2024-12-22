@@ -1,4 +1,4 @@
-use crate::{GridBuf, GridIter, GridMut, Rows, View};
+use crate::{GridBuf, GridIter, GridMut, RowsIter, View};
 
 pub trait Grid {
     type Item;
@@ -113,11 +113,11 @@ pub trait Grid {
     }
 
     #[inline]
-    fn rows(&self) -> Rows<&Self>
+    fn rows(&self) -> RowsIter<&Self>
     where
         Self: Sized,
     {
-        Rows::new(self, self.height())
+        RowsIter::new(self, self.height())
     }
 
     // IDEA: getting views from ranges could also work
