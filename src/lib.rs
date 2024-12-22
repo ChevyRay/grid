@@ -56,7 +56,7 @@ fn test() {
 
     for (y, mut row) in grid.rows_mut().enumerate() {
         for (i, val) in row.iter_mut().enumerate() {
-            *val = i;
+            *val = y * 10 + i;
         }
     }
 
@@ -73,7 +73,9 @@ fn test() {
     let mut targ = grid.clone();
 
     for (mut dst, src) in targ.rows_mut().zip(grid.rows().rev()) {
-        dst.copy_from(src);
+        for (mut dst, src) in dst.iter_mut().zip(src.iter()) {
+            *dst = *src;
+        }
     }
 
     display(&targ);
