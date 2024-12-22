@@ -56,10 +56,25 @@ impl<'a, G: Grid> Row<&'a G> {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    #[inline]
     pub fn get(&self, x: usize) -> Option<&G::Item> {
         self.grid.get(x, self.y)
     }
 
+    /// Returns a reference to the item at position `x` in the row without bounds checking.
+    ///
+    /// For a safe alternative, see [`get`](Self::get).
+    ///
+    /// # Safety
+    ///
+    /// Calling this method with an out-of-bounds index is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     #[inline]
     pub unsafe fn get_unchecked(&self, x: usize) -> &G::Item {
         self.grid.get_unchecked(x, self.y)
@@ -82,6 +97,9 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         self.grid.get_mut(x, self.y)
     }
 
+    /// # Safety
+    /// Because this row has a mutable reference to the grid itself, it can
+    /// give out a mutable reference to a value inside it.
     #[inline]
     pub unsafe fn get_unchecked_mut(&mut self, x: usize) -> &mut G::Item {
         self.grid.get_unchecked_mut(x, self.y)
@@ -108,7 +126,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
     where
         G::Item: Clone,
     {
-        if self.len() == 0 {
+        if self.is_empty() {
             return;
         }
         if let Some(slice) = self.as_mut_slice() {
@@ -134,18 +152,18 @@ impl<'a, G: GridMut> Row<&'a mut G> {
                 dst.clone_from_slice(src);
             }
             (Some(dst), None) => {
-                for x in 0..row.len() {
-                    dst[x] = row.get(x).unwrap().clone();
+                for (dst, src) in dst.iter_mut().zip(row) {
+                    *dst = src.clone();
                 }
             }
             (None, Some(src)) => {
-                for x in 0..row.len() {
-                    *self.get_mut(x).unwrap() = src[x].clone();
+                for (dst, src) in self.iter_mut().zip(src) {
+                    *dst = src.clone();
                 }
             }
             (None, None) => {
-                for i in 0..self.len() {
-                    *self.get_mut(i).unwrap() = row.get(i).unwrap().clone();
+                for (dst, src) in self.iter_mut().zip(row) {
+                    *dst = src.clone();
                 }
             }
         }
@@ -164,25 +182,25 @@ impl<'a, G: GridMut> Row<&'a mut G> {
                 dst.copy_from_slice(src);
             }
             (Some(dst), None) => {
-                for x in 0..row.len() {
-                    dst[x] = *row.get(x).unwrap();
+                for (dst, src) in dst.iter_mut().zip(row) {
+                    *dst = *src;
                 }
             }
             (None, Some(src)) => {
-                for x in 0..row.len() {
-                    *self.get_mut(x).unwrap() = src[x];
+                for (dst, src) in self.iter_mut().zip(src) {
+                    *dst = *src;
                 }
             }
             (None, None) => {
-                for i in 0..self.len() {
-                    *self.get_mut(i).unwrap() = *row.get(i).unwrap();
+                for (dst, src) in self.iter_mut().zip(row) {
+                    *dst = *src;
                 }
             }
         }
     }
 
     #[inline]
-    pub fn iter_mut(&'a mut self) -> RowIter<&'a mut G> {
+    pub fn iter_mut(&mut self) -> RowIter<&mut G> {
         RowIter::new(self.grid, self.y, self.len())
     }
 }

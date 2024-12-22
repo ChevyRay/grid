@@ -8,7 +8,7 @@ pub struct View<GridRef> {
     pub(crate) h: usize,
 }
 
-impl<'a, G> View<&'a G> {
+impl<G> View<&G> {
     #[inline]
     pub const fn x(&self) -> usize {
         self.x
@@ -20,7 +20,7 @@ impl<'a, G> View<&'a G> {
     }
 }
 
-impl<'a, G: Grid> Grid for View<&'a G> {
+impl<G: Grid> Grid for View<&G> {
     type Item = G::Item;
     type Root = G;
 
@@ -75,7 +75,7 @@ impl<'a, G: Grid> Grid for View<&'a G> {
     }
 }
 
-impl<'a, G: Grid> Grid for View<&'a mut G> {
+impl<G: Grid> Grid for View<&mut G> {
     type Item = G::Item;
     type Root = G;
 
@@ -130,7 +130,7 @@ impl<'a, G: Grid> Grid for View<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> GridMut for View<&'a mut G> {
+impl<G: GridMut> GridMut for View<&mut G> {
     #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self.grid

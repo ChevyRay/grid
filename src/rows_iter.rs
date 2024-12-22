@@ -56,7 +56,7 @@ impl<'a, G: Grid> Iterator for RowsIter<&'a G> {
     }
 }
 
-impl<'a, G: Grid> DoubleEndedIterator for RowsIter<&'a G> {
+impl<G: Grid> DoubleEndedIterator for RowsIter<&G> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.y < self.b {
@@ -68,14 +68,14 @@ impl<'a, G: Grid> DoubleEndedIterator for RowsIter<&'a G> {
     }
 }
 
-impl<'a, G: Grid> ExactSizeIterator for RowsIter<&'a G> {
+impl<G: Grid> ExactSizeIterator for RowsIter<&G> {
     #[inline]
     fn len(&self) -> usize {
         self.b - self.y
     }
 }
 
-impl<'a, G: Grid> FusedIterator for RowsIter<&'a G> {}
+impl<G: Grid> FusedIterator for RowsIter<&G> {}
 
 impl<'a, G: GridMut> Iterator for RowsIter<&'a mut G> {
     type Item = Row<&'a mut G>;
@@ -120,7 +120,7 @@ impl<'a, G: GridMut> Iterator for RowsIter<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> DoubleEndedIterator for RowsIter<&'a mut G> {
+impl<G: GridMut> DoubleEndedIterator for RowsIter<&mut G> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.y < self.b {
@@ -133,11 +133,11 @@ impl<'a, G: GridMut> DoubleEndedIterator for RowsIter<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> ExactSizeIterator for RowsIter<&'a mut G> {
+impl<G: GridMut> ExactSizeIterator for RowsIter<&mut G> {
     #[inline]
     fn len(&self) -> usize {
         self.b - self.y
     }
 }
 
-impl<'a, G: GridMut> FusedIterator for RowsIter<&'a mut G> {}
+impl<G: GridMut> FusedIterator for RowsIter<&mut G> {}

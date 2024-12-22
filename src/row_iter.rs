@@ -59,7 +59,7 @@ impl<'a, G: Grid> Iterator for RowIter<&'a G> {
     }
 }
 
-impl<'a, G: Grid> DoubleEndedIterator for RowIter<&'a G> {
+impl<G: Grid> DoubleEndedIterator for RowIter<&G> {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.x < self.r {
             self.r -= 1;
@@ -70,14 +70,14 @@ impl<'a, G: Grid> DoubleEndedIterator for RowIter<&'a G> {
     }
 }
 
-impl<'a, G: Grid> ExactSizeIterator for RowIter<&'a G> {
+impl<G: Grid> ExactSizeIterator for RowIter<&G> {
     #[inline]
     fn len(&self) -> usize {
         self.r - self.x
     }
 }
 
-impl<'a, G: Grid> FusedIterator for RowIter<&'a G> {}
+impl<G: Grid> FusedIterator for RowIter<&G> {}
 
 // ---------- MUTABLE ITERATOR ----------
 
@@ -122,7 +122,7 @@ impl<'a, G: GridMut> Iterator for RowIter<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> DoubleEndedIterator for RowIter<&'a mut G> {
+impl<G: GridMut> DoubleEndedIterator for RowIter<&mut G> {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.x < self.r {
             let item: *mut G::Item = self.grid.get_mut(self.r, self.y).unwrap();
@@ -134,11 +134,11 @@ impl<'a, G: GridMut> DoubleEndedIterator for RowIter<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> ExactSizeIterator for RowIter<&'a mut G> {
+impl<G: GridMut> ExactSizeIterator for RowIter<&mut G> {
     #[inline]
     fn len(&self) -> usize {
         self.r - self.x
     }
 }
 
-impl<'a, G: GridMut> FusedIterator for RowIter<&'a mut G> {}
+impl<G: GridMut> FusedIterator for RowIter<&mut G> {}
