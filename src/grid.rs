@@ -1,10 +1,12 @@
-use crate::{Iter, View};
+use crate::{GridBuf, Iter, Rows, View};
 
 pub trait Grid {
     type Item;
     type Root;
 
     fn root(&self) -> &Self::Root;
+    fn root_x(&self) -> usize;
+    fn root_y(&self) -> usize;
     fn width(&self) -> usize;
     fn height(&self) -> usize;
     fn get(&self, x: usize, y: usize) -> Option<&Self::Item>;
@@ -19,38 +21,49 @@ pub trait Grid {
     fn row_slice(&self, y: usize) -> Option<&[Self::Item]>;
 
     #[inline]
-    fn root_x(&self) -> usize {
-        0
+    fn same_size<G2: Grid>(&self, other: &G2) -> bool {
+        self.width() == other.width() && self.height() == other.height()
     }
 
     #[inline]
-    fn root_y(&self) -> usize {
-        0
-    }
-
-    #[inline]
-    fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<'_, Self::Root>> {
+    fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<&Self::Root>> {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
-            Some(View::new(self.root(), x, y, w, h))
+            Some(View {
+                grid: self.root(),
+                x,
+                y,
+                w,
+                h,
+            })
         } else {
             None
         }
     }
 
     #[inline]
-    fn view(&self, x: usize, y: usize, w: usize, h: usize) -> View<'_, Self::Root> {
+    fn view(&self, x: usize, y: usize, w: usize, h: usize) -> View<&Self::Root> {
         self.try_view(x, y, w, h)
             .expect("view does not overlap grid's bounds")
     }
 
     #[inline]
-    fn full_view(&self) -> View<'_, Self::Root>
+    fn full_view(&self) -> View<&Self::Root>
     where
         Self::Root: Grid<Item = Self::Item>,
     {
-        View::new(self.root(), 0, 0, self.width(), self.height())
+        self.view(0, 0, self.width(), self.height())
+    }
+
+    fn to_vec_grid(&self) -> GridBuf<Self::Item, Vec<Self::Item>>
+    where
+        Self::Item: Clone,
+    {
+        todo!()
+        //let mut vec = Vec::with_capacity(self.width() * self.height());
+        //vec.extend(self.iter().map(|(val, ..)| val.clone()));
+        //self.full_view().to_grid_buf()
     }
 
     #[inline]
@@ -59,6 +72,14 @@ pub trait Grid {
         Self: Sized,
     {
         Iter::new(self)
+    }
+
+    #[inline]
+    fn rows(&self) -> Rows<&Self>
+    where
+        Self: Sized,
+    {
+        Rows { grid: self, y: 0 }
     }
 
     // IDEA: getting views from ranges could also work
@@ -90,4 +111,49 @@ pub trait Grid {
         let y = self.root_y() + y;
         Some(GridView::new(self.root(), x, y, w, h))
     }*/
+}
+
+impl<T, const W: usize, const H: usize> Grid for [[T; W]; H] {
+    type Item = T;
+    type Root = Self;
+
+    #[inline]
+    fn root(&self) -> &Self::Root {
+        self
+    }
+
+    #[inline]
+    fn root_x(&self) -> usize {
+        0
+    }
+
+    #[inline]
+    fn root_y(&self) -> usize {
+        0
+    }
+
+    #[inline]
+    fn width(&self) -> usize {
+        W
+    }
+
+    #[inline]
+    fn height(&self) -> usize {
+        H
+    }
+
+    #[inline]
+    fn get(&self, x: usize, y: usize) -> Option<&Self::Item> {
+        (x < W && y < H).then(|| &self[y][x])
+    }
+
+    #[inline]
+    unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item {
+        self.as_slice().get_unchecked(y).get_unchecked(x)
+    }
+
+    #[inline]
+    fn row_slice(&self, y: usize) -> Option<&[Self::Item]> {
+        (y < H).then(|| self[y].as_slice())
+    }
 }

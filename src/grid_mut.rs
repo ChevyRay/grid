@@ -1,4 +1,4 @@
-use crate::{Grid, IterMut, ViewMut};
+use crate::{Grid, IterMut, Rows, View};
 
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
@@ -38,36 +38,31 @@ pub trait GridMut: Grid {
         y: usize,
         w: usize,
         h: usize,
-    ) -> Option<ViewMut<'_, Self::Root>>
-    where
-        Self::Root: GridMut<Item = Self::Item>,
-    {
+    ) -> Option<View<&mut Self::Root>> {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
-            Some(ViewMut::new(self.root_mut(), x, y, w, h))
+            Some(View {
+                grid: self.root_mut(),
+                x,
+                y,
+                w,
+                h,
+            })
         } else {
             None
         }
     }
 
     #[inline]
-    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> ViewMut<'_, Self::Root>
-    where
-        Self::Root: GridMut<Item = Self::Item>,
-    {
+    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> View<&mut Self::Root> {
         self.try_view_mut(x, y, w, h)
             .expect("view does not overlap grid's bounds")
     }
 
     #[inline]
-    fn full_view_mut(&mut self) -> ViewMut<'_, Self::Root>
-    where
-        Self::Root: GridMut<Item = Self::Item>,
-    {
-        let w = self.width();
-        let h = self.height();
-        ViewMut::new(self.root_mut(), 0, 0, w, h)
+    fn full_view_mut(&mut self) -> View<&mut Self::Root> {
+        self.view_mut(0, 0, self.width(), self.height())
     }
 
     #[inline]
@@ -76,5 +71,78 @@ pub trait GridMut: Grid {
         Self: Sized,
     {
         IterMut::new(self)
+    }
+
+    #[inline]
+    fn rows_mut(&mut self) -> Rows<&mut Self>
+    where
+        Self: Sized,
+    {
+        Rows { grid: self, y: 0 }
+    }
+
+    fn fill_with<F: FnMut() -> Self::Item>(&mut self, mut f: F)
+    where
+        Self: Sized,
+    {
+        for mut row in self.rows_mut() {
+            row.fill_with(&mut f);
+        }
+    }
+
+    fn fill(&mut self, value: Self::Item)
+    where
+        Self: Sized,
+        Self::Item: Clone,
+    {
+        let mut rows = self.rows_mut();
+        if let Some(mut row) = rows.next() {
+            for mut row in rows {
+                row.fill(value.clone());
+            }
+            row.fill(value);
+        }
+    }
+
+    fn clone_from<G2>(&mut self, grid: &G2)
+    where
+        G2: Grid<Item = Self::Item>,
+        G2::Item: Clone,
+        Self: Sized,
+    {
+        for (mut dst, src) in self.rows_mut().zip(grid.rows()) {
+            dst.clone_from(src);
+        }
+    }
+
+    fn copy_from<G2>(&mut self, grid: &G2)
+    where
+        G2: Grid<Item = Self::Item>,
+        G2::Item: Copy,
+        Self: Sized,
+    {
+        for (mut dst, src) in self.rows_mut().zip(grid.rows()) {
+            dst.copy_from(src);
+        }
+    }
+}
+
+impl<T, const W: usize, const H: usize> GridMut for [[T; W]; H] {
+    fn root_mut(&mut self) -> &mut Self::Root {
+        self
+    }
+
+    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item> {
+        (x < W && y < H).then(|| &mut self[y][x])
+    }
+
+    unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item {
+        self.as_mut_slice()
+            .get_unchecked_mut(y)
+            .get_unchecked_mut(x)
+    }
+
+    fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]> {
+        (y < H).then(|| self[y].as_mut_slice())
     }
 }

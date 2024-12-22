@@ -10,7 +10,7 @@ pub struct Iter<'a, G> {
 
 impl<'a, G> Iter<'a, G> {
     #[inline]
-    pub fn new(grid: &'a G) -> Self {
+    pub(crate) fn new(grid: &'a G) -> Self {
         Self { grid, x: 0, y: 0 }
     }
 }

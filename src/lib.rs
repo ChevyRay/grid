@@ -1,21 +1,17 @@
-//mod coord;
 mod grid;
 mod grid_buf;
-//mod region;
 mod grid_mut;
 mod iter;
 mod iter_mut;
+mod row;
 mod view;
-mod view_mut;
 
-//pub use coord::*;
 pub use grid::*;
 pub use grid_buf::*;
 pub use grid_mut::*;
 pub use iter::*;
 pub use iter_mut::*;
-pub use view_mut::*;
-//ub use region::*;
+pub use row::*;
 pub use view::*;
 
 #[test]
@@ -47,7 +43,11 @@ fn test() {
         println!();
     }
 
-    let mut data = vec![0usize; 25];
+    let mut grid = GridBuf::with_store(4, 4, [0; 16]);
+
+    display(&grid);
+
+    /*let mut data = vec![0usize; 25];
     let mut grid = GridBuf::with_store(5, 5, data.as_mut_slice());
     //let mut grid = BufGrid::<usize>::new(5, 5);
     for x in 0..grid.width() {
@@ -65,5 +65,5 @@ fn test() {
 
     let view2 = view.view(1, 1, 2, 2);
 
-    display(&view2);
+    display(&view2);*/
 }

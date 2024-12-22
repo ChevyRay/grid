@@ -9,7 +9,7 @@ pub struct IterMut<'a, G> {
 
 impl<'a, G> IterMut<'a, G> {
     #[inline]
-    pub fn new(grid: &'a mut G) -> Self {
+    pub(crate) fn new(grid: &'a mut G) -> Self {
         Self { grid, x: 0, y: 0 }
     }
 }

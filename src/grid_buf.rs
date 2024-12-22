@@ -79,6 +79,16 @@ impl<T, S: AsRef<[T]>> Grid for GridBuf<T, S> {
     }
 
     #[inline]
+    fn root_x(&self) -> usize {
+        0
+    }
+
+    #[inline]
+    fn root_y(&self) -> usize {
+        0
+    }
+
+    #[inline]
     fn width(&self) -> usize {
         self.width
     }
