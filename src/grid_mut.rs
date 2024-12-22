@@ -1,4 +1,4 @@
-use crate::{Grid, GridIterMut, RowsIter, View};
+use crate::{Grid, GridIterMut, Row, RowsIter, View};
 
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
@@ -63,6 +63,16 @@ pub trait GridMut: Grid {
     #[inline]
     fn full_view_mut(&mut self) -> View<&mut Self::Root> {
         self.view_mut(0, 0, self.width(), self.height())
+    }
+
+    #[inline]
+    fn try_row_mut(&mut self, y: usize) -> Option<Row<&mut Self>> {
+        (y < self.height()).then(|| Row::new(self, y))
+    }
+
+    #[inline]
+    fn row_mut(&mut self, y: usize) -> Row<&mut Self> {
+        self.try_row_mut(y).expect("row index out of bounds")
     }
 
     #[inline]
