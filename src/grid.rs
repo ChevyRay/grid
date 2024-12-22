@@ -74,7 +74,7 @@ pub trait Grid {
         Self::Item: Default + Clone,
         Self: Sized,
     {
-        let mut arr = std::array::from_fn(|_| Self::Item::default());
+        /*let mut arr = std::array::from_fn(|_| Self::Item::default());
         for (dst, src) in arr.chunks_exact_mut(self.width()).zip(self.rows()) {
             if let Some(src) = src.as_slice() {
                 dst.clone_from_slice(src);
@@ -84,7 +84,8 @@ pub trait Grid {
                 }
             }
         }
-        GridBuf::with_store(self.width(), self.height(), arr)
+        GridBuf::with_store(self.width(), self.height(), arr)*/
+        todo!()
     }
 
     fn to_vec_grid(&self) -> GridBuf<Self::Item, Vec<Self::Item>>

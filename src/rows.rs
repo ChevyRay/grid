@@ -48,15 +48,6 @@ impl<'a, G: Grid> Iterator for Rows<&'a G> {
     }
 }
 
-impl<'a, G: Grid> ExactSizeIterator for Rows<&'a G> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.h - self.y
-    }
-}
-
-impl<'a, G: Grid> FusedIterator for Rows<&'a G> {}
-
 impl<'a, G: Grid> DoubleEndedIterator for Rows<&'a G> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -71,6 +62,15 @@ impl<'a, G: Grid> DoubleEndedIterator for Rows<&'a G> {
         }
     }
 }
+
+impl<'a, G: Grid> ExactSizeIterator for Rows<&'a G> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.h - self.y
+    }
+}
+
+impl<'a, G: Grid> FusedIterator for Rows<&'a G> {}
 
 impl<'a, G: GridMut> Iterator for Rows<&'a mut G> {
     type Item = Row<&'a mut G>;
@@ -113,15 +113,6 @@ impl<'a, G: GridMut> Iterator for Rows<&'a mut G> {
     }
 }
 
-impl<'a, G: GridMut> ExactSizeIterator for Rows<&'a mut G> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.h - self.y
-    }
-}
-
-impl<'a, G: GridMut> FusedIterator for Rows<&'a mut G> {}
-
 impl<'a, G: GridMut> DoubleEndedIterator for Rows<&'a mut G> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -137,3 +128,12 @@ impl<'a, G: GridMut> DoubleEndedIterator for Rows<&'a mut G> {
         }
     }
 }
+
+impl<'a, G: GridMut> ExactSizeIterator for Rows<&'a mut G> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.h - self.y
+    }
+}
+
+impl<'a, G: GridMut> FusedIterator for Rows<&'a mut G> {}

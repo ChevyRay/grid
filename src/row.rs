@@ -66,9 +66,14 @@ impl<'a, G: Grid> Row<&'a G> {
     }
 
     #[inline]
-    pub fn iter(&self) -> RowIter<&Self> {
+    pub fn iter(&self) -> RowIter<&'a G> {
         let w = self.len();
-        RowIter { row: self, x: 0, w }
+        RowIter {
+            grid: self.grid,
+            x: 0,
+            y: self.y,
+            w,
+        }
     }
 }
 
@@ -178,44 +183,66 @@ impl<'a, G: GridMut> Row<&'a mut G> {
     }
 
     #[inline]
-    pub fn iter_mut(&mut self) -> RowIter<&mut Self> {
+    pub fn iter_mut(&'a mut self) -> RowIter<&'a mut G> {
         let w = self.len();
-        RowIter { row: self, x: 0, w }
+        let y = self.y;
+        RowIter {
+            grid: self.grid,
+            x: 0,
+            y,
+            w,
+        }
+    }
+}
+
+impl<'a, G: Grid> IntoIterator for Row<&'a G> {
+    type Item = &'a G::Item;
+    type IntoIter = RowIter<&'a G>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        RowIter::new(self.grid, self.y, self.grid.width())
+    }
+}
+
+impl<'a, G: GridMut> IntoIterator for Row<&'a mut G> {
+    type Item = &'a mut G::Item;
+    type IntoIter = RowIter<&'a mut G>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        let w = self.grid.width();
+        RowIter::new(self.grid, self.y, w)
     }
 }
 
 impl<'a, G: Grid> IntoIterator for &'a Row<&'a G> {
     type Item = &'a G::Item;
-    type IntoIter = RowIter<Self>;
+    type IntoIter = RowIter<&'a G>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        RowIter {
-            row: self,
-            x: 0,
-            w: self.len(),
-        }
+        RowIter::new(self.grid, self.y, self.grid.width())
     }
 }
 
 impl<'a, G: Grid> IntoIterator for &'a Row<&'a mut G> {
     type Item = &'a G::Item;
-    type IntoIter = RowIter<Self>;
+    type IntoIter = RowIter<&'a G>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        let w = self.len();
-        RowIter { row: self, x: 0, w }
+        RowIter::new(self.grid, self.y, self.grid.width())
     }
 }
 
 impl<'a, G: GridMut> IntoIterator for &'a mut Row<&'a mut G> {
     type Item = &'a mut G::Item;
-    type IntoIter = RowIter<Self>;
+    type IntoIter = RowIter<&'a mut G>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        let w = self.len();
-        RowIter { row: self, x: 0, w }
+        let w = self.grid.width();
+        RowIter::new(self.grid, self.y, w)
     }
 }

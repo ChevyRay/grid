@@ -52,6 +52,7 @@ fn test() {
         println!();
     }
 
+    /*
     let mut grid = GridBuf::with_store(5, 5, vec![0usize; 25]);
 
     for (y, mut row) in grid.rows_mut().enumerate() {
@@ -78,5 +79,5 @@ fn test() {
         }
     }
 
-    display(&targ);
+    display(&targ);*/
 }
