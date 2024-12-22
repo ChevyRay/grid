@@ -1,8 +1,8 @@
 mod grid;
 mod grid_buf;
-mod grid_mut;
 mod grid_iter;
 mod grid_iter_mut;
+mod grid_mut;
 mod row;
 mod row_iter;
 mod rows;
@@ -10,9 +10,9 @@ mod view;
 
 pub use grid::*;
 pub use grid_buf::*;
-pub use grid_mut::*;
 pub use grid_iter::*;
 pub use grid_iter_mut::*;
+pub use grid_mut::*;
 pub use row::*;
 pub use row_iter::*;
 pub use rows::*;
@@ -73,6 +73,8 @@ fn test() {
     for (mut dst, src) in targ.rows_mut().zip(grid.rows().rev()) {
         dst.copy_from(src);
     }
+
+    let mut crop = targ.view(1, 1, 3, 3).to_grid_buf([0usize; 9]);
 
     display(&grid);
 

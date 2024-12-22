@@ -53,11 +53,17 @@ pub trait Grid {
     fn to_vec_grid(&self) -> GridBuf<Self::Item, Vec<Self::Item>>
     where
         Self::Item: Clone,
+        Self: Sized,
     {
-        todo!()
-        //let mut vec = Vec::with_capacity(self.width() * self.height());
-        //vec.extend(self.iter().map(|(val, ..)| val.clone()));
-        //self.full_view().to_grid_buf()
+        let mut vec = Vec::with_capacity(self.width() * self.height());
+        for row in self.rows() {
+            if let Some(row) = row.as_slice() {
+                vec.extend_from_slice(row);
+            } else {
+                vec.extend(row.iter().cloned())
+            }
+        }
+        GridBuf::with_store(self.width(), self.height(), vec)
     }
 
     #[inline]
