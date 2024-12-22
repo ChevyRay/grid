@@ -1,3 +1,37 @@
+//! A crate to make working with 2D arrays (grids) very pleasant.
+//!
+//! This library provides two core traits, [`Grid`] and [`GridMut`], which represent immutable
+//! and mutable grids respectively. Rather than just supplying a concrete 2D array type, this
+//! approach allows all grid-based algorithms to be written generically, which lets the user
+//! choose the actual implementation and storage method for their grids.
+//!
+//! In addition to these traits, a [`GridBuf`] is provided which allows you to create a grid
+//! out of any collection that implements [`AsRef`] and optionally [`AsMut`] (such as arrays,
+//! slices, vectors, and tiny/smallvec types).
+//!
+//! # Examples
+//!
+//! The simplest way to create a grid is to create a 2D array. The grid traits are implemented
+//! on all arrays of the form `[[T; WIDTH]; HEIGHT]`.
+//!
+//! ```rust
+//! use grid::{Grid, GridMut};
+//!
+//! // create a 3×2 grid of letters
+//! let mut letters = [
+//!     ['A', 'B', 'C'],
+//!     ['D', 'E', 'F']
+//! ];
+//!
+//! // you can extract values from it
+//! assert_eq!(letters.get(1, 0), Some(&'B'));
+//! assert_eq!(letters.get(2, 1), Some(&'F'));
+//!
+//! // you can write values to it
+//! letters.set(2, 0, 'X');
+//! assert_eq!(letters.get(2, 0), Some(&'X'));
+//! ```
+
 mod grid;
 mod grid_buf;
 mod grid_iter;
@@ -17,11 +51,6 @@ pub use row::*;
 pub use row_iter::*;
 pub use rows_iter::*;
 pub use view::*;
-
-// Wrapped<Coord<usize>>
-// wrapped((0, 0))
-// coord(0, 0)
-// icoord(0, 0)
 
 #[test]
 fn test() {
