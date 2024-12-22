@@ -1,18 +1,11 @@
-use crate::{Grid, GridBuf, GridMut};
+use crate::{Grid, GridMut};
 
 pub struct View<GridRef> {
-    grid: GridRef,
-    x: usize,
-    y: usize,
-    w: usize,
-    h: usize,
-}
-
-impl<GridRef> View<GridRef> {
-    #[inline]
-    pub fn new(grid: GridRef, x: usize, y: usize, w: usize, h: usize) -> Self {
-        Self { grid, x, y, w, h }
-    }
+    pub(crate) grid: GridRef,
+    pub(crate) x: usize,
+    pub(crate) y: usize,
+    pub(crate) w: usize,
+    pub(crate) h: usize,
 }
 
 impl<'a, G> View<&'a G> {

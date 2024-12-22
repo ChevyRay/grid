@@ -42,7 +42,13 @@ pub trait GridMut: Grid {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
-            Some(View::new(self.root_mut(), x, y, w, h))
+            Some(View {
+                grid: self.root_mut(),
+                x,
+                y,
+                w,
+                h,
+            })
         } else {
             None
         }
