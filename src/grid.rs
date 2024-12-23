@@ -43,7 +43,7 @@ pub trait Grid {
 
     /// Returns row `y` of the grid as a slice if it is able to do so. Algorithms that work
     /// on large portions of the grid may use this to look for performance gain. For example,
-    /// [`Row::copy_from`] uses this internally to call [`copy_from_slice`] when possible,
+    /// [`Row::draw_copied`] uses this internally to call [`copy_from_slice`] when possible,
     /// which can be faster than manually copying elements one-by-one.
     ///
     /// [`copy_from_slice`]: https://doc.rust-lang.org/std/primitive.slice.html#method.copy_from_slice

@@ -9,6 +9,13 @@
 //! out of any collection that implements [`AsRef`] and optionally [`AsMut`] (such as arrays,
 //! slices, vectors, and tiny/smallvec types).
 //!
+//! 1. [Use Cases](#use-cases)
+//! 2. [Basic Usage](#basic-usage)
+//! 3. [Views](#views)
+//! 4. [GridBufs](#gridbufs)
+//! 5. [Drawing](#drawing)
+//! 6. [Generic Code](#generic-code)
+//!
 //! # Use Cases
 //!
 //! Being a game developer means that games, graphics, pathfinding, and procedural
@@ -258,7 +265,7 @@
 //! If two grids are the same size, one can be "pasted" onto the other. So to paint just
 //! the middle 2×2 section, we get a view of it and then draw another 2×2 grid on top.
 //!
-//! # Generic Grids
+//! # Generic Code
 //!
 //! Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is possible
 //! to write algorithms that can work on any kinds of grids with any sort of data storage,
@@ -270,7 +277,14 @@
 //! ```rust
 //! use grid::{Grid, GridMut};
 //!
-//! fn draw_box<T, G>(grid: &mut G, value: T, x: usize, y: usize, w: usize, h: usize)
+//! fn draw_box<T, G>(
+//!     grid: &mut G,
+//!     value: T,
+//!     x: usize,
+//!     y: usize,
+//!     w: usize,
+//!     h: usize,
+//! )
 //! where
 //!     T: Clone,
 //!     G: GridMut<Item = T>,
