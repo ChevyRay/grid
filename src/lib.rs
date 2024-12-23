@@ -152,6 +152,16 @@
 //! let middle = numbers.view(1, 1, 2, 2);
 //! assert_eq!(middle.get(0, 0), Some(&'F'));
 //! ```
+//!
+//! # GridBufs
+//!
+//! It is very common to store grid data in a single contiguous array or vector of data. If
+//! you have a grid that is `width × height`, you can store its data in a list of that area
+//! and access elements positionally with the formula `y * width + x`.
+//!
+//! The `GridBuf` struct is a wrapper over any type that implements `AsRef<[T]>` and/or
+//! `AsMut<[T]>` that allows you to treat the data as if it was stored in a grid. This
+//! has a few different useful purposes.
 
 mod col;
 mod col_iter;
