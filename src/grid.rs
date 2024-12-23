@@ -97,7 +97,7 @@ pub trait Grid {
     }
 
     #[inline]
-    fn iter(&self) -> GridIter<'_, Self>
+    fn iter(&self) -> GridIter<&Self>
     where
         Self: Sized,
     {

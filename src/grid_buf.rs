@@ -1,4 +1,4 @@
-use crate::{Grid, GridIter, GridIterMut, GridMut};
+use crate::{Grid, GridIter, GridMut};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::marker::PhantomData;
@@ -152,7 +152,7 @@ impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut for GridBuf<T, S> {
 
 impl<'a, T, S: AsRef<[T]>> IntoIterator for &'a GridBuf<T, S> {
     type Item = (&'a T, usize, usize);
-    type IntoIter = GridIter<'a, GridBuf<T, S>>;
+    type IntoIter = GridIter<&'a GridBuf<T, S>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
@@ -162,7 +162,7 @@ impl<'a, T, S: AsRef<[T]>> IntoIterator for &'a GridBuf<T, S> {
 
 impl<'a, T, S: AsRef<[T]> + AsMut<[T]>> IntoIterator for &'a mut GridBuf<T, S> {
     type Item = (&'a mut T, usize, usize);
-    type IntoIter = GridIterMut<'a, GridBuf<T, S>>;
+    type IntoIter = GridIter<&'a mut GridBuf<T, S>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {

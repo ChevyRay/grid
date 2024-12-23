@@ -1,5 +1,5 @@
 use crate::cols_iter::ColsIter;
-use crate::{Col, Grid, GridIterMut, Row, RowsIter, View};
+use crate::{Col, Grid, GridIter, Row, RowsIter, View};
 
 /// A type representing a mutable 2D array.
 pub trait GridMut: Grid {
@@ -64,11 +64,11 @@ pub trait GridMut: Grid {
     }
 
     #[inline]
-    fn iter_mut(&mut self) -> GridIterMut<'_, Self>
+    fn iter_mut(&mut self) -> GridIter<&mut Self>
     where
         Self: Sized,
     {
-        GridIterMut::new(self)
+        GridIter::new(self)
     }
 
     #[inline]
