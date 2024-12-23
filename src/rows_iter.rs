@@ -1,6 +1,7 @@
 use crate::{Grid, GridMut, Row};
 use std::iter::FusedIterator;
 
+/// Iterator over the rows of a grid.
 #[derive(Clone)]
 pub struct RowsIter<GridRef> {
     grid: GridRef,

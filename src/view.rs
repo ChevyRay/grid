@@ -1,6 +1,7 @@
 use crate::{Grid, GridMut};
 use std::ops::Deref;
 
+/// Sub-section of a larger grid.
 #[repr(C)]
 #[derive(Clone)]
 pub struct View<GridRef> {

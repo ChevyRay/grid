@@ -1,6 +1,7 @@
 use crate::{Grid, GridMut, RowIter};
 use std::ops::Deref;
 
+/// A single row of a grid.
 #[repr(C)]
 #[derive(Clone)]
 pub struct Row<GridRef> {
