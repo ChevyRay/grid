@@ -344,6 +344,10 @@ pub use row_iter::*;
 pub use rows_iter::*;
 pub use view::*;
 
+// This is where I've been doing some ad-hoc testing. The display() function here is a
+// pretty way to display a grid that I've been using to test that the functions are
+// working correctly, so feel free to use this if you want to contribute to the project.
+/*
 #[test]
 fn test() {
     use std::fmt::{Debug, Write};
@@ -372,33 +376,5 @@ fn test() {
         }
         println!();
     }
-
-    /*
-    let mut grid = GridBuf::with_store(5, 5, vec![0usize; 25]);
-
-    for (y, mut row) in grid.rows_mut().enumerate() {
-        for (i, val) in row.iter_mut().enumerate() {
-            *val = y * 10 + i;
-        }
-    }
-
-    /*for x in 0..grid.width() {
-        for y in 0..grid.height() {
-            *grid.get_mut(x, y).unwrap() = y * grid.width() + x;
-        }
-    }*/
-
-    display(&grid);
-
-    //grid.rows_mut().last().unwrap().fill(9);
-
-    let mut targ = grid.clone();
-
-    for (mut dst, src) in targ.rows_mut().zip(grid.rows().rev()) {
-        for (mut dst, src) in dst.iter_mut().zip(src.iter()) {
-            *dst = *src;
-        }
-    }
-
-    display(&targ);*/
 }
+*/
