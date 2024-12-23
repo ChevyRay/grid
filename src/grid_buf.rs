@@ -3,6 +3,7 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::marker::PhantomData;
 
+/// A grid implementation for different storage types.
 pub struct GridBuf<T, S = Vec<T>> {
     width: usize,
     height: usize,

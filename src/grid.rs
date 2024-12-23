@@ -1,6 +1,7 @@
 use crate::cols_iter::ColsIter;
 use crate::{Col, GridBuf, GridIter, GridMut, Row, RowsIter, View};
 
+/// A type representing an immutable 2D array.
 pub trait Grid {
     type Item;
     type Root: Grid<Item = Self::Item>;

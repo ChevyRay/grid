@@ -1,6 +1,7 @@
 use crate::cols_iter::ColsIter;
 use crate::{Col, Grid, GridIterMut, Row, RowsIter, View};
 
+/// A type representing a mutable 2D array.
 pub trait GridMut: Grid {
     type RootMut: GridMut<Item = Self::Item>;
 

@@ -1,6 +1,7 @@
 use crate::Grid;
 use std::iter::FusedIterator;
 
+/// Iterator over all values in a grid, with their positions.
 #[derive(Copy, Clone)]
 pub struct GridIter<'a, G> {
     grid: &'a G,
