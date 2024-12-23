@@ -170,7 +170,7 @@
 //! you have a grid that is `width × height`, you can store its data in a list of that area
 //! and access elements positionally with the formula `y * width + x`.
 //!
-//! The `GridBuf` struct is a wrapper over any type that implements `AsRef<[T]>` and/or
+//! The [`GridBuf`] struct is a wrapper over any type that implements `AsRef<[T]>` and/or
 //! `AsMut<[T]>` that does all this for you and allows you to treat the data as if it
 //! was stored in a grid. This has a few different useful purposes.
 //!
