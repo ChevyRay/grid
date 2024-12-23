@@ -1,4 +1,4 @@
-# GRID
+<h1 align="center">▚▚▚ GRID ▚▚▚</h1>
 
 This library provides two core traits, [`Grid`](src/grid.rs) and [`GridMut`](src/grid_mut.rs), which represent immutable
 and mutable grids respectively. Rather than just supplying a concrete 2D array type, this
