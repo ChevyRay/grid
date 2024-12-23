@@ -11,6 +11,7 @@ choose the actual implementation and storage method for their grids.
 - [Views](#views)
 - [Drawing](#drawing)
 - [Generic Code](#generic-code)
+- [Roadmap](#roadmap)
 
 > [!WARNING]  
 > This library is still an early draft, is missing features, and should be
