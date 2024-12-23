@@ -32,6 +32,8 @@ pub trait Grid {
     /// Returns a reference to the value stored at `(x, y)` in the grid, skipping
     /// any bounds checks.
     ///
+    /// For a safe alternative, see [`get`](Self::get).
+    ///
     /// # Safety
     /// Calling this method with an out-of-bounds coord is *[undefined behavior]*
     /// even if the resulting reference is not used.
@@ -72,12 +74,6 @@ pub trait Grid {
     fn view(&self, x: usize, y: usize, w: usize, h: usize) -> View<&Self::Root> {
         self.try_view(x, y, w, h)
             .expect("view does not overlap grid's bounds")
-    }
-
-    /// Get an immutable [`View`] of this entire grid.
-    #[inline]
-    fn full_view(&self) -> View<&Self::Root> {
-        self.view(0, 0, self.width(), self.height())
     }
 
     /// Create a [`GridBuf`] using the provided storage and clone this entire

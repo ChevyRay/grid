@@ -48,18 +48,6 @@ impl<'a, G> From<&'a View<&'a mut G>> for View<&'a G> {
     }
 }
 
-impl<G> View<&G> {
-    #[inline]
-    pub const fn x(&self) -> usize {
-        self.x
-    }
-
-    #[inline]
-    pub const fn y(&self) -> usize {
-        self.y
-    }
-}
-
 impl<G: Grid> Grid for View<&G> {
     type Item = G::Item;
     type Root = G;
