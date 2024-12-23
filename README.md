@@ -1,4 +1,4 @@
-A crate to make working with 2D arrays very pleasant.
+# GRID
 
 This library provides two core traits, [`Grid`](src/grid.rs) and [`GridMut`](src/grid_mut.rs), which represent immutable
 and mutable grids respectively. Rather than just supplying a concrete 2D array type, this
