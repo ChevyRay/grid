@@ -20,7 +20,7 @@
 //! // create a 3×2 grid of letters
 //! let mut letters = [
 //!     ['A', 'B', 'C'],
-//!     ['D', 'E', 'F']
+//!     ['D', 'E', 'F'],
 //! ];
 //!
 //! // you can extract values from it
