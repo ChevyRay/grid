@@ -12,6 +12,14 @@ choose the actual implementation and storage method for their grids.
 - [Drawing](#drawing)
 - [Generic Code](#generic-code)
 
+> [!WARNING]  
+> This library is still an early draft, is missing features, and should be
+> considered volatile and subject to change. Once I think it has reached a
+> solid `Version 1.0` status, I will stabilize it and start applying proper
+> semantic versioning to changes. I am open-sourcing it early so I can get
+> feedback on the API, some of the implementations, and make improvements
+> before people start using it for actual projects.
+
 # Use Cases
 
 Being a game developer means that games, graphics, pathfinding, and procedural
