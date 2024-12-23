@@ -160,7 +160,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
 
     /// Clone all values from the provided row to this one.
     #[inline]
-    pub fn clone_from<G2>(&mut self, row: impl Into<Row<&'a G2>>)
+    pub fn draw_cloned<G2>(&mut self, row: impl Into<Row<&'a G2>>)
     where
         G2: Grid<Item = G::Item> + 'a,
         G::Item: Clone,
@@ -191,7 +191,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
 
     /// Copy all values from the provided row to this one.
     #[inline]
-    pub fn copy_from<G2>(&mut self, row: impl Into<Row<&'a G2>>)
+    pub fn draw_copied<G2>(&mut self, row: impl Into<Row<&'a G2>>)
     where
         G2: Grid<Item = G::Item> + 'a,
         G::Item: Copy,

@@ -232,7 +232,7 @@
 //! each other. For example, if I have one grid, I can "draw" another grid on top of it
 //! like so:
 //!
-//! ```rust
+//!```rust
 //! use grid::{GridBuf, Grid, GridMut};
 //!
 //! let mut dst = [
@@ -242,7 +242,7 @@
 //!     [0, 0, 0, 0],
 //! ];
 //!
-//! dst.view_mut(1, 1, 2, 2).copy_from(&[
+//! dst.view_mut(1, 1, 2, 2).draw_copied(&[
 //!     [1, 2],
 //!     [3, 4],
 //! ]);

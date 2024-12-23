@@ -165,7 +165,7 @@ pub trait GridMut: Grid {
     /// Clone all values from a source grid into this one. Panics if the grids
     /// are not the same size.
     #[inline]
-    fn clone_from<G2>(&mut self, grid: &G2)
+    fn draw_cloned<G2>(&mut self, grid: &G2)
     where
         G2: Grid<Item = Self::Item>,
         G2::Item: Clone,
@@ -174,14 +174,14 @@ pub trait GridMut: Grid {
         assert_eq!(self.width(), grid.width());
         assert_eq!(self.height(), grid.height());
         for (mut dst, src) in self.rows_mut().zip(grid.rows()) {
-            dst.clone_from(src);
+            dst.draw_cloned(src);
         }
     }
 
     /// Copy all values from a source grid into this one. Panics if the grids
     /// are not the same size.
     #[inline]
-    fn copy_from<G2>(&mut self, grid: &G2)
+    fn draw_copied<G2>(&mut self, grid: &G2)
     where
         G2: Grid<Item = Self::Item>,
         G2::Item: Copy,
@@ -190,7 +190,7 @@ pub trait GridMut: Grid {
         assert_eq!(self.width(), grid.width());
         assert_eq!(self.height(), grid.height());
         for (mut dst, src) in self.rows_mut().zip(grid.rows()) {
-            dst.copy_from(src);
+            dst.draw_copied(src);
         }
     }
 }

@@ -86,7 +86,7 @@ pub trait Grid {
         Self: Sized,
     {
         let mut buf = GridBuf::with_store(self.width(), self.height(), store);
-        buf.clone_from(self);
+        buf.draw_cloned(self);
         buf
     }
 
