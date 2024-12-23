@@ -2,7 +2,9 @@ use crate::cols_iter::ColsIter;
 use crate::{Col, Grid, GridIterMut, Row, RowsIter, View};
 
 pub trait GridMut: Grid {
-    fn root_mut(&mut self) -> &mut Self::Root;
+    type RootMut: GridMut<Item = Self::Item>;
+
+    fn root_mut(&mut self) -> &mut Self::RootMut;
     fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item>;
 
     /// # Safety
@@ -39,7 +41,7 @@ pub trait GridMut: Grid {
         y: usize,
         w: usize,
         h: usize,
-    ) -> Option<View<&mut Self::Root>> {
+    ) -> Option<View<&mut Self::RootMut>> {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
@@ -56,13 +58,13 @@ pub trait GridMut: Grid {
     }
 
     #[inline]
-    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> View<&mut Self::Root> {
+    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> View<&mut Self::RootMut> {
         self.try_view_mut(x, y, w, h)
             .expect("view does not overlap grid's bounds")
     }
 
     #[inline]
-    fn full_view_mut(&mut self) -> View<&mut Self::Root> {
+    fn full_view_mut(&mut self) -> View<&mut Self::RootMut> {
         self.view_mut(0, 0, self.width(), self.height())
     }
 
@@ -161,8 +163,10 @@ pub trait GridMut: Grid {
 }
 
 impl<T, const W: usize, const H: usize> GridMut for [[T; W]; H] {
+    type RootMut = Self;
+
     #[inline]
-    fn root_mut(&mut self) -> &mut Self::Root {
+    fn root_mut(&mut self) -> &mut Self::RootMut {
         self
     }
 

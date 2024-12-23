@@ -104,7 +104,7 @@
 //! # Views
 //!
 //! In addition to working on the grids themselves, you can create *views* into grids.
-//! You can think of having a [`View`](View) into a grid as the same as having a *slice*
+//! You can think of having a [`View`] into a grid as the same as having a *slice*
 //! into a vector or array, except it is two dimensions instead of one.
 //!
 //! These views are themselves grids, allowing you to treat sub-sections of your root grid
@@ -122,7 +122,7 @@
 //!     [0, 0, 0, 0, 0],
 //! ];
 //!
-//! // fill in the center 2×2 cells
+//! // fill in the center 3×2 cells
 //! block.view_mut(1, 1, 3, 2).fill(1);
 //!
 //! assert_eq!(block, [
@@ -160,8 +160,137 @@
 //! and access elements positionally with the formula `y * width + x`.
 //!
 //! The `GridBuf` struct is a wrapper over any type that implements `AsRef<[T]>` and/or
-//! `AsMut<[T]>` that allows you to treat the data as if it was stored in a grid. This
-//! has a few different useful purposes.
+//! `AsMut<[T]>` that does all this for you and allows you to treat the data as if it
+//! was stored in a grid. This has a few different useful purposes.
+//!
+//! You can create a heap-allocated grid:
+//!
+//! ```rust
+//! use grid::{GridBuf, GridMut};
+//!
+//! let mut numbers: GridBuf<i32> = GridBuf::new(3, 3);
+//! numbers.set(1, 1, 3);
+//!
+//! assert_eq!(numbers.into_store(), vec![
+//!     0, 0, 0,
+//!     0, 3, 0,
+//!     0, 0, 0,
+//! ]);
+//! ```
+//!
+//! If you have a pre-existing vector, you could create one from that:
+//!
+//! ```rust
+//! # use grid::{GridBuf, Grid};
+//! let vec = vec![
+//!     0, 1, 2,
+//!     3, 4, 5,
+//!     6, 7, 8
+//! ];
+//! let numbers = GridBuf::with_store(3, 3, vec);
+//!
+//! assert_eq!(numbers.get(0, 1), Some(&3));
+//! assert_eq!(numbers.get(2, 2), Some(&8));
+//! ```
+//!
+//! Maybe you don't want to heap-allocate, in which case you can just pass in a
+//! stack-allocated array to use as the backing store:
+//!
+//! ```rust
+//! # use grid::{GridBuf, GridMut};
+//! let mut numbers = GridBuf::with_store(3, 3, [0i32; 9]);
+//! numbers.set(0, 0, 1);
+//! numbers.set(1, 1, 2);
+//! numbers.set(2, 2, 3);
+//!
+//! assert_eq!(numbers.into_store(), [
+//!     1, 0, 0,
+//!     0, 2, 0,
+//!     0, 0, 3,
+//! ]);
+//!```
+//!
+//! No heap-allocations required! You can store the data however you want, recycle it
+//! between calls, or edit data in-place with a more convenient API. For example, if you
+//! had a big lump of 2D data embedded in a program, you could just store it in a
+//! contiguous static slice and wrap a `GridBuf` around it whenever you wanted to edit it.
+//!
+//! # Drawing
+//!
+//! In addition to positionally editing and sampling grids, you can also copy them from
+//! each other. For example, if I have one grid, I can "draw" another grid on top of it
+//! like so:
+//!
+//! ```rust
+//! use grid::{GridBuf, Grid, GridMut};
+//!
+//! let mut dst = [
+//!     [0, 0, 0, 0],
+//!     [0, 0, 0, 0],
+//!     [0, 0, 0, 0],
+//!     [0, 0, 0, 0],
+//! ];
+//!
+//! dst.view_mut(1, 1, 2, 2).copy_from(&[
+//!     [1, 2],
+//!     [3, 4],
+//! ]);
+//!
+//! assert_eq!(dst, [
+//!     [0, 0, 0, 0],
+//!     [0, 1, 2, 0],
+//!     [0, 3, 4, 0],
+//!     [0, 0, 0, 0],
+//! ]);
+//! ```
+//!
+//! If two grids are the same size, one can be "pasted" onto the other. So to paint just
+//! the middle 2×2 section, we get a view of it and then draw another 2×2 grid on top.
+//!
+//! # Generic Grids
+//!
+//! Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is very easy
+//! to write algorithms that can work on any kinds of grids with any sort of data storage,
+//! with almost no glue required to make them work together.
+//!
+//! When writing an algorithm to operate on grids, best practics is to do so generically.
+//! For example, I could write an algorithm that draws an empty box:
+//!
+//! ```rust
+//! use grid::{Grid, GridMut};
+//!
+//! fn draw_box<T, G>(grid: &mut G, value: T, x: usize, y: usize, w: usize, h: usize)
+//! where
+//!     T: Clone,
+//!     G: GridMut<Item = T>,
+//! {
+//!     let mut view = grid.view_mut(x, y, w, h);
+//!     view.row_mut(0).fill(value.clone());
+//!     view.row_mut(h - 1).fill(value.clone());
+//!     view.col_mut(0).fill(value.clone());
+//!     view.col_mut(w - 1).fill(value);
+//! }
+//!
+//! let mut nums = [
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//! ];
+//!
+//! draw_box(&mut nums, 8, 1, 1, 4, 4);
+//!
+//! assert_eq!(nums, [
+//!     [0, 0, 0, 0, 0, 0],
+//!     [0, 8, 8, 8, 8, 0],
+//!     [0, 8, 0, 0, 8, 0],
+//!     [0, 8, 0, 0, 8, 0],
+//!     [0, 8, 8, 8, 8, 0],
+//!     [0, 0, 0, 0, 0, 0],
+//! ]);
+//! ```
 
 mod col;
 mod col_iter;

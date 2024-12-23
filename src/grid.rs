@@ -3,7 +3,7 @@ use crate::{Col, GridBuf, GridIter, GridMut, Row, RowsIter, View};
 
 pub trait Grid {
     type Item;
-    type Root;
+    type Root: Grid<Item = Self::Item>;
 
     fn root(&self) -> &Self::Root;
     fn root_x(&self) -> usize;
@@ -50,10 +50,7 @@ pub trait Grid {
     }
 
     #[inline]
-    fn full_view(&self) -> View<&Self::Root>
-    where
-        Self::Root: Grid<Item = Self::Item>,
-    {
+    fn full_view(&self) -> View<&Self::Root> {
         self.view(0, 0, self.width(), self.height())
     }
 
