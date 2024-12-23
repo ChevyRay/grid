@@ -9,6 +9,17 @@
 //! out of any collection that implements [`AsRef`] and optionally [`AsMut`] (such as arrays,
 //! slices, vectors, and tiny/smallvec types).
 //!
+//! # Use Cases
+//!
+//! Being a game developer means that games, graphics, pathfinding, and procedural
+//! generation are a huge part of what I do. This system for working with grids was mostly
+//! inspired by my work in those areas, and is designed to serve them well.
+//!
+//! You can store entities in a grid, the pixels of an image, the walls of generated
+//! mazes, a game map, or minesweeper mines. Whatever the case, having a very flexible and
+//! modular API for working with these grids and making them interact with each other is
+//! essential to having a good time.
+//!
 //! # Basic Usage
 //!
 //! The simplest way to create a grid is to create a 2D array. The grid traits are implemented
@@ -249,7 +260,7 @@
 //!
 //! # Generic Grids
 //!
-//! Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is very easy
+//! Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is possible
 //! to write algorithms that can work on any kinds of grids with any sort of data storage,
 //! with almost no glue required to make them work together.
 //!
@@ -291,6 +302,10 @@
 //!     [0, 0, 0, 0, 0, 0],
 //! ]);
 //! ```
+//!
+//! Because the function is written generically, it can be called on any type of grid,
+//! with any sort of fill value. It could be numbers, chars, enums, structs, or anything.
+//!
 
 mod col;
 mod col_iter;
