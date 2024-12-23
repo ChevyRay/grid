@@ -1,6 +1,7 @@
 use crate::{ColIter, Grid, GridMut};
 use std::ops::Deref;
 
+#[repr(C)]
 #[derive(Clone)]
 pub struct Col<GridRef> {
     grid: GridRef,

@@ -1,11 +1,50 @@
 use crate::{Grid, GridMut};
+use std::ops::Deref;
 
+#[repr(C)]
+#[derive(Clone)]
 pub struct View<GridRef> {
-    pub(crate) grid: GridRef,
-    pub(crate) x: usize,
-    pub(crate) y: usize,
-    pub(crate) w: usize,
-    pub(crate) h: usize,
+    grid: GridRef,
+    x: usize,
+    y: usize,
+    w: usize,
+    h: usize,
+}
+
+impl<GridRef> View<GridRef> {
+    pub(crate) fn new(grid: GridRef, x: usize, y: usize, w: usize, h: usize) -> Self {
+        Self { grid, x, y, w, h }
+    }
+}
+
+impl<'a, G> Deref for View<&'a mut G> {
+    type Target = View<&'a G>;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl<'a, G> From<View<&'a mut G>> for View<&'a G> {
+    #[inline]
+    fn from(View { grid, x, y, w, h }: View<&'a mut G>) -> Self {
+        Self { grid, x, y, w, h }
+    }
+}
+
+impl<'a, G> From<&'a View<&'a G>> for View<&'a G> {
+    #[inline]
+    fn from(View { grid, x, y, w, h }: &'a View<&'a G>) -> Self {
+        Self::new(grid, *x, *y, *w, *h)
+    }
+}
+
+impl<'a, G> From<&'a View<&'a mut G>> for View<&'a G> {
+    #[inline]
+    fn from(View { grid, x, y, w, h }: &'a View<&'a mut G>) -> Self {
+        Self::new(grid, *x, *y, *w, *h)
+    }
 }
 
 impl<G> View<&G> {
