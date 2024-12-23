@@ -1,4 +1,5 @@
-use crate::{Grid, GridIterMut, Row, RowsIter, View};
+use crate::cols_iter::ColsIter;
+use crate::{Col, Grid, GridIterMut, Row, RowsIter, View};
 
 pub trait GridMut: Grid {
     fn root_mut(&mut self) -> &mut Self::Root;
@@ -66,21 +67,29 @@ pub trait GridMut: Grid {
     }
 
     #[inline]
-    fn try_row_mut(&mut self, y: usize) -> Option<Row<&mut Self>> {
-        (y < self.height()).then(|| Row::new(self, y))
-    }
-
-    #[inline]
-    fn row_mut(&mut self, y: usize) -> Row<&mut Self> {
-        self.try_row_mut(y).expect("row index out of bounds")
-    }
-
-    #[inline]
     fn iter_mut(&mut self) -> GridIterMut<'_, Self>
     where
         Self: Sized,
     {
         GridIterMut::new(self)
+    }
+
+    #[inline]
+    fn cols_mut(&mut self) -> ColsIter<&mut Self>
+    where
+        Self: Sized,
+    {
+        ColsIter::new(self, self.width())
+    }
+
+    #[inline]
+    fn try_col_mut(&mut self, x: usize) -> Option<Col<&mut Self>> {
+        (x < self.width()).then(|| Col::new(self, x))
+    }
+
+    #[inline]
+    fn col_mut(&mut self, x: usize) -> Col<&mut Self> {
+        self.try_col_mut(x).expect("column index out of bounds")
     }
 
     #[inline]
@@ -91,6 +100,17 @@ pub trait GridMut: Grid {
         RowsIter::new(self, self.height())
     }
 
+    #[inline]
+    fn try_row_mut(&mut self, y: usize) -> Option<Row<&mut Self>> {
+        (y < self.height()).then(|| Row::new(self, y))
+    }
+
+    #[inline]
+    fn row_mut(&mut self, y: usize) -> Row<&mut Self> {
+        self.try_row_mut(y).expect("row index out of bounds")
+    }
+
+    #[inline]
     fn fill_with<F: FnMut() -> Self::Item>(&mut self, mut f: F)
     where
         Self: Sized,
@@ -100,6 +120,7 @@ pub trait GridMut: Grid {
         }
     }
 
+    #[inline]
     fn fill(&mut self, value: Self::Item)
     where
         Self: Sized,
@@ -114,6 +135,7 @@ pub trait GridMut: Grid {
         }
     }
 
+    #[inline]
     fn clone_from<G2>(&mut self, grid: &G2)
     where
         G2: Grid<Item = Self::Item>,
@@ -125,6 +147,7 @@ pub trait GridMut: Grid {
         }
     }
 
+    #[inline]
     fn copy_from<G2>(&mut self, grid: &G2)
     where
         G2: Grid<Item = Self::Item>,
@@ -138,20 +161,24 @@ pub trait GridMut: Grid {
 }
 
 impl<T, const W: usize, const H: usize> GridMut for [[T; W]; H] {
+    #[inline]
     fn root_mut(&mut self) -> &mut Self::Root {
         self
     }
 
+    #[inline]
     fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut Self::Item> {
         (x < W && y < H).then(|| &mut self[y][x])
     }
 
+    #[inline]
     unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item {
         self.as_mut_slice()
             .get_unchecked_mut(y)
             .get_unchecked_mut(x)
     }
 
+    #[inline]
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]> {
         (y < H).then(|| self[y].as_mut_slice())
     }
