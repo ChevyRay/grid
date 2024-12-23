@@ -9,12 +9,12 @@
 //! out of any collection that implements [`AsRef`] and optionally [`AsMut`] (such as arrays,
 //! slices, vectors, and tiny/smallvec types).
 //!
-//! 1. [Use Cases](#use-cases)
-//! 2. [Basic Usage](#basic-usage)
-//! 3. [Views](#views)
-//! 4. [GridBufs](#gridbufs)
-//! 5. [Drawing](#drawing)
-//! 6. [Generic Code](#generic-code)
+//! - [Use Cases](#use-cases)
+//! - [Basic Usage](#basic-usage)
+//! - [GridBufs](#gridbufs)
+//! - [Views](#views)
+//! - [Drawing](#drawing)
+//! - [Generic Code](#generic-code)
 //!
 //! # Use Cases
 //!
@@ -119,58 +119,6 @@
 //! ]);
 //! ```
 //!
-//! # Views
-//!
-//! In addition to working on the grids themselves, you can create *views* into grids.
-//! You can think of having a [`View`] into a grid as the same as having a *slice*
-//! into a vector or array, except it is two dimensions instead of one.
-//!
-//! These views are themselves grids, allowing you to treat sub-sections of your root grid
-//! as if they were entire grids themselves. This means that any algorithm that works with
-//! grid traits will also work on sub-sections of a grid as well.
-//!
-//! For example, rather than filling an entire grid, I could fill in just a portion of it:
-//!
-//! ```rust
-//! # use grid::{Grid, GridMut};
-//! let mut block = [
-//!     [0, 0, 0, 0, 0],
-//!     [0, 0, 0, 0, 0],
-//!     [0, 0, 0, 0, 0],
-//!     [0, 0, 0, 0, 0],
-//! ];
-//!
-//! // fill in the center 3×2 cells
-//! block.view_mut(1, 1, 3, 2).fill(1);
-//!
-//! assert_eq!(block, [
-//!     [0, 0, 0, 0, 0],
-//!     [0, 1, 1, 1, 0],
-//!     [0, 1, 1, 1, 0],
-//!     [0, 0, 0, 0, 0],
-//! ]);
-//! ```
-//!
-//! When you have a view, all coordinates are local to its top-left:
-//!
-//! ```rust
-//! # use grid::{Grid, GridMut};
-//! let mut numbers = [
-//!     ['A', 'B', 'C', 'D'],
-//!     ['E', 'F', 'G', 'H'],
-//!     ['I', 'J', 'K', 'L'],
-//!     ['M', 'N', 'O', 'P'],
-//! ];
-//!
-//! // (0, 0) is the top-left of the entire grid
-//! assert_eq!(numbers.get(0, 0), Some(&'A'));
-//!
-//! // but if we have a "view" into just the middle 2×2 cells,
-//! // then now (0, 0) is the top-left of that sub-section
-//! let middle = numbers.view(1, 1, 2, 2);
-//! assert_eq!(middle.get(0, 0), Some(&'F'));
-//! ```
-//!
 //! # GridBufs
 //!
 //! It is very common to store grid data in a single contiguous array or vector of data. If
@@ -232,6 +180,58 @@
 //! between calls, or edit data in-place with a more convenient API. For example, if you
 //! had a big lump of 2D data embedded in a program, you could just store it in a
 //! contiguous static slice and wrap a `GridBuf` around it whenever you wanted to edit it.
+//!
+//! # Views
+//!
+//! In addition to working on the grids themselves, you can create *views* into grids.
+//! You can think of having a [`View`] into a grid as the same as having a *slice*
+//! into a vector or array, except it is two dimensions instead of one.
+//!
+//! These views are themselves grids, allowing you to treat sub-sections of your root grid
+//! as if they were entire grids themselves. This means that any algorithm that works with
+//! grid traits will also work on sub-sections of a grid as well.
+//!
+//! For example, rather than filling an entire grid, I could fill in just a portion of it:
+//!
+//! ```rust
+//! # use grid::{Grid, GridMut};
+//! let mut block = [
+//!     [0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0],
+//!     [0, 0, 0, 0, 0],
+//! ];
+//!
+//! // fill in the center 3×2 cells
+//! block.view_mut(1, 1, 3, 2).fill(1);
+//!
+//! assert_eq!(block, [
+//!     [0, 0, 0, 0, 0],
+//!     [0, 1, 1, 1, 0],
+//!     [0, 1, 1, 1, 0],
+//!     [0, 0, 0, 0, 0],
+//! ]);
+//! ```
+//!
+//! When you have a view, all coordinates are local to its top-left:
+//!
+//! ```rust
+//! # use grid::{Grid, GridMut};
+//! let mut numbers = [
+//!     ['A', 'B', 'C', 'D'],
+//!     ['E', 'F', 'G', 'H'],
+//!     ['I', 'J', 'K', 'L'],
+//!     ['M', 'N', 'O', 'P'],
+//! ];
+//!
+//! // (0, 0) is the top-left of the entire grid
+//! assert_eq!(numbers.get(0, 0), Some(&'A'));
+//!
+//! // but if we have a "view" into just the middle 2×2 cells,
+//! // then now (0, 0) is the top-left of that sub-section
+//! let middle = numbers.view(1, 1, 2, 2);
+//! assert_eq!(middle.get(0, 0), Some(&'F'));
+//! ```
 //!
 //! # Drawing
 //!
