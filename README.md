@@ -337,6 +337,9 @@ There are currently some missing features, traits that should be implemented, an
 probably a few bugs to sniff out. I don't have an exact roadmap yet, but for now
 I'll put a few notes here about what needs to be done.
 
+- [ ] It doesn't really have a name. I was thinking of calling it `moz` maybe? Unsure,
+open to suggestions on this. I don't know if I want to put this on [crates.io](crates.io),
+but if I was going to it would need a unique name.
 - [ ] The crate's approach to iterators needs to be evaluated, as I feel like some
 iterators can be improved, some better naming conventions can be used, and there are
 probably certain useful iterators that are straight up missing.
