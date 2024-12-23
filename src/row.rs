@@ -15,6 +15,7 @@ impl<GridRef> Row<GridRef> {
         Self { grid, y }
     }
 
+    /// The row's index, or y-position.
     #[inline]
     pub fn index(&self) -> usize {
         self.y
@@ -52,28 +53,31 @@ impl<'a, G> From<&'a Row<&'a mut G>> for Row<&'a G> {
 }
 
 impl<'a, G: Grid> Row<&'a G> {
+    /// Length of the row (equal to the grid's width).
     #[inline]
     pub fn len(&self) -> usize {
         self.grid.width()
     }
 
+    /// Returns `true` if the row has no width.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
+    /// Get a reference to the value in column `x` of this row.
     #[inline]
     pub fn get(&self, x: usize) -> Option<&G::Item> {
         self.grid.get(x, self.y)
     }
 
-    /// Returns a reference to the item at position `x` in the row without bounds checking.
+    /// Get a reference to the value in column `x` of this row, without bounds checking.
     ///
     /// For a safe alternative, see [`get`](Self::get).
     ///
     /// # Safety
     ///
-    /// Calling this method with an out-of-bounds index is *[undefined behavior]*
+    /// Calling this method with an out-of-bounds `x` value is *[undefined behavior]*
     /// even if the resulting reference is not used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
@@ -82,11 +86,13 @@ impl<'a, G: Grid> Row<&'a G> {
         self.grid.get_unchecked(x, self.y)
     }
 
+    /// Returns this row as an immutable slice if able to do so.
     #[inline]
     pub fn as_slice(&self) -> Option<&[G::Item]> {
         self.grid.row_slice(self.y)
     }
 
+    /// Iterate over all values in the row.
     #[inline]
     pub fn iter(&self) -> RowIter<&'a G> {
         RowIter::new(self.grid, self.y, self.len())
@@ -94,24 +100,34 @@ impl<'a, G: Grid> Row<&'a G> {
 }
 
 impl<'a, G: GridMut> Row<&'a mut G> {
+    /// Get a mutable reference to the value in column `x` of this row.
     #[inline]
     pub fn get_mut(&mut self, x: usize) -> Option<&mut G::Item> {
         self.grid.get_mut(x, self.y)
     }
 
+    /// Get a mutable reference to the value in column `x` of this row, without
+    /// bounds checking.
+    ///
+    /// For a safe alternative, see [`get`](Self::get_mut).
+    ///
     /// # Safety
-    /// Because this row has a mutable reference to the grid itself, it can
-    /// give out a mutable reference to a value inside it.
-    #[inline]
+    ///
+    /// Calling this method with an out-of-bounds `x` value is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     pub unsafe fn get_unchecked_mut(&mut self, x: usize) -> &mut G::Item {
         self.grid.get_unchecked_mut(x, self.y)
     }
 
+    /// Returns this row as a mutable slice if able to do so.
     #[inline]
     pub fn as_mut_slice(&mut self) -> Option<&mut [G::Item]> {
         self.grid.row_slice_mut(self.y)
     }
 
+    /// Fill the entire row with values provided by a function.
     #[inline]
     pub fn fill_with<F: FnMut() -> G::Item>(&mut self, mut f: F) {
         if let Some(slice) = self.as_mut_slice() {
@@ -123,6 +139,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         }
     }
 
+    /// Fill the entire row with the provided value.
     #[inline]
     pub fn fill(&mut self, value: G::Item)
     where
@@ -141,6 +158,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         }
     }
 
+    /// Clone all values from the provided row to this one.
     #[inline]
     pub fn clone_from<G2>(&mut self, row: impl Into<Row<&'a G2>>)
     where
@@ -171,6 +189,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         }
     }
 
+    /// Copy all values from the provided row to this one.
     #[inline]
     pub fn copy_from<G2>(&mut self, row: impl Into<Row<&'a G2>>)
     where
@@ -201,6 +220,7 @@ impl<'a, G: GridMut> Row<&'a mut G> {
         }
     }
 
+    /// Mutably iterate over all values in the row.
     #[inline]
     pub fn iter_mut(&mut self) -> RowIter<&mut G> {
         RowIter::new(self.grid, self.y, self.len())

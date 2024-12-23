@@ -15,6 +15,7 @@ impl<GridRef> Col<GridRef> {
         Self { grid, x }
     }
 
+    /// The column's index, or x-position.
     #[inline]
     pub fn index(&self) -> usize {
         self.x
@@ -52,28 +53,31 @@ impl<'a, G> From<&'a Col<&'a mut G>> for Col<&'a G> {
 }
 
 impl<'a, G: Grid> Col<&'a G> {
+    /// Length of the column (equal to the grid's height).
     #[inline]
     pub fn len(&self) -> usize {
         self.grid.height()
     }
 
+    /// Returns `true` if the column has no height.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
+    /// Get a reference to the value in row `y` of this column.
     #[inline]
     pub fn get(&self, y: usize) -> Option<&G::Item> {
         self.grid.get(self.x, y)
     }
 
-    /// Returns a reference to the item at position `x` in the row without bounds checking.
+    /// Get a reference to the value in row `y` of this column, without bounds checking.
     ///
     /// For a safe alternative, see [`get`](Self::get).
     ///
     /// # Safety
     ///
-    /// Calling this method with an out-of-bounds index is *[undefined behavior]*
+    /// Calling this method with an out-of-bounds `y` value is *[undefined behavior]*
     /// even if the resulting reference is not used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
@@ -82,6 +86,7 @@ impl<'a, G: Grid> Col<&'a G> {
         self.grid.get_unchecked(self.x, y)
     }
 
+    /// Iterate over all values in the column.
     #[inline]
     pub fn iter(&self) -> ColIter<&'a G> {
         ColIter::new(self.grid, self.x, self.len())
@@ -89,19 +94,28 @@ impl<'a, G: Grid> Col<&'a G> {
 }
 
 impl<'a, G: GridMut> Col<&'a mut G> {
+    /// Get a mutable reference to the value in row `y` of this column.
     #[inline]
     pub fn get_mut(&mut self, y: usize) -> Option<&mut G::Item> {
         self.grid.get_mut(self.x, y)
     }
 
+    /// Get a mutable reference to the value in row `y` of this column, without
+    /// bounds checking.
+    ///
+    /// For a safe alternative, see [`get_mut`](Self::get_mut).
+    ///
     /// # Safety
-    /// Because this row has a mutable reference to the grid itself, it can
-    /// give out a mutable reference to a value inside it.
-    #[inline]
+    ///
+    /// Calling this method with an out-of-bounds `y` value is *[undefined behavior]*
+    /// even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     pub unsafe fn get_unchecked_mut(&mut self, y: usize) -> &mut G::Item {
         self.grid.get_unchecked_mut(self.x, y)
     }
 
+    /// Fill the entire column with values provided by a function.
     #[inline]
     pub fn fill_with<F: FnMut() -> G::Item>(&mut self, mut f: F) {
         for val in self.iter_mut() {
@@ -109,6 +123,7 @@ impl<'a, G: GridMut> Col<&'a mut G> {
         }
     }
 
+    /// Fill the entire column with the provided value.
     #[inline]
     pub fn fill(&mut self, value: G::Item)
     where
@@ -123,6 +138,7 @@ impl<'a, G: GridMut> Col<&'a mut G> {
         *self.get_mut(0).unwrap() = value;
     }
 
+    /// Clone all values from the provided column to this one.
     #[inline]
     pub fn clone_from<G2>(&mut self, col: impl Into<Col<&'a G2>>)
     where
@@ -136,6 +152,7 @@ impl<'a, G: GridMut> Col<&'a mut G> {
         }
     }
 
+    /// Copy all values from the provided column to this one.
     #[inline]
     pub fn copy_from<G2>(&mut self, col: impl Into<Col<&'a G2>>)
     where
@@ -149,6 +166,7 @@ impl<'a, G: GridMut> Col<&'a mut G> {
         }
     }
 
+    /// Mutably iterate over all values in the column.
     #[inline]
     pub fn iter_mut(&mut self) -> ColIter<&mut G> {
         ColIter::new(self.grid, self.x, self.len())
