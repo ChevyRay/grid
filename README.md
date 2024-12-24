@@ -279,8 +279,8 @@ the middle 2×2 section, we get a view of it and then draw another 2×2 grid on 
 
 # Generic Code
 
-Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is possible
-to write algorithms that can work on any kinds of grids with any sort of data storage,
+Because the entire API uses the the [`Grid`](src/grid.rs) and [`GridMut`](src/grid_mut.rs) traits,
+it is possible to write algorithms that can work on any kinds of grids with any sort of data storage,
 with almost no glue required to make them work together.
 
 When writing an algorithm to operate on grids, best practics is to do so generically.
@@ -361,3 +361,10 @@ sparse grid, or other useful features like that.
 - [ ] Serde support should probably be feature-gated.
 - [ ] I haven't written no-std stuff before, but I feel like a no-std version of
 this library could be possible, so I'd need to do some looking into that.
+- [ ] Does some concept of a type representing a coordinate or rectangle fit into the
+scope of this library? The usefulness of coordinate types is already proven, but the
+current `usize` requirement of sampling grids poses some problems that need addressed:
+are all unsigned integers allowed? Are signed integers allowed? Is `-1` outside the
+bounds of a grid, or does it wrap around? Rust's standard library does not answer
+these questions and only uses `usize` for sampling, so there's no basis for this
+answer at least within the core libraries.
