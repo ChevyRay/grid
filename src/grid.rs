@@ -200,6 +200,24 @@ pub trait Grid {
 
     /// Get an immutable [`View`] into this grid, or `None` if the provided region is
     /// out of bounds.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// assert_eq!(nums.get(0, 0), Some(&0));
+    /// assert_eq!(nums.get(1, 1), Some(&4));
+    ///
+    /// let view = nums.try_view(1, 1, 2, 2).unwrap();
+    /// assert_eq!(view.get(0, 0), Some(&4));
+    /// assert_eq!(view.get(1, 1), Some(&8));
+    ///
+    /// assert!(nums.try_view(2, 2, 5, 5).is_none());
+    /// ```
     #[inline]
     fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<&Self::Root>> {
         if x + w <= self.width() && y + h <= self.height() {
