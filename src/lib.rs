@@ -1,13 +1,9 @@
-//! A crate to make working with 2D arrays (grids) very pleasant.
+//! # **▚▚▚ G R I D ▚▚▚**
 //!
 //! This library provides two core traits, [`Grid`] and [`GridMut`], which represent immutable
 //! and mutable grids respectively. Rather than just supplying a concrete 2D array type, this
 //! approach allows all grid-based algorithms to be written generically, which lets the user
 //! choose the actual implementation and storage method for their grids.
-//!
-//! In addition to these traits, a [`GridBuf`] is provided which allows you to create a grid
-//! out of any collection that implements [`AsRef`] and optionally [`AsMut`] (such as arrays,
-//! slices, vectors, and tiny/smallvec types).
 //!
 //! - [Use Cases](#use-cases)
 //! - [Basic Usage](#basic-usage)
@@ -15,6 +11,16 @@
 //! - [Views](#views)
 //! - [Drawing](#drawing)
 //! - [Generic Code](#generic-code)
+//! - [Roadmap](#roadmap)
+//!
+//! <div class="warning"><em>
+//! This library is still an early draft, is missing features, and should be
+//! considered volatile and subject to change. Once I think it has reached a
+//! solid `Version 1.0` status, I will stabilize it and start applying proper
+//! semantic versioning to changes. I am open-sourcing it early so I can get
+//! feedback on the API, some of the implementations, and make improvements
+//! before people start using it for actual projects.
+//! </em></div>
 //!
 //! # Use Cases
 //!
@@ -53,7 +59,8 @@
 //! You can operate on specific columns and rows:
 //!
 //! ```rust
-//! # use grid::{Grid, GridMut};
+//! use grid::{Grid, GridMut};
+//!
 //! let mut letters = [
 //!     [' ', ' ', ' '],
 //!     [' ', ' ', ' '],
@@ -78,7 +85,8 @@
 //! You can iterate over columns or rows:
 //!
 //! ```rust
-//! # use grid::{Grid, GridMut};
+//! use grid::{Grid, GridMut};
+//!
 //! let mut numbers = [
 //!     [1, 2, 3],
 //!     [4, 5, 6],
@@ -96,7 +104,8 @@
 //! Or operate on the entire grid at once:
 //!
 //! ```rust
-//! # use grid::{Grid, GridMut};
+//! use grid::{Grid, GridMut};
+//!
 //! let mut numbers = [
 //!     [0, 0, 0],
 //!     [0, 0, 0],
@@ -134,10 +143,10 @@
 //! ```rust
 //! use grid::{GridBuf, GridMut};
 //!
-//! let mut numbers: GridBuf<i32> = GridBuf::new(3, 3);
+//! let mut numbers = GridBuf::new(3, 3);
 //! numbers.set(1, 1, 3);
 //!
-//! assert_eq!(numbers.into_store(), vec![
+//! assert_eq!(numbers.to_store(), vec![
 //!     0, 0, 0,
 //!     0, 3, 0,
 //!     0, 0, 0,
@@ -147,7 +156,8 @@
 //! If you have a pre-existing vector, you could create one from that:
 //!
 //! ```rust
-//! # use grid::{GridBuf, Grid};
+//! use grid::{GridBuf, Grid};
+//!
 //! let vec = vec![
 //!     0, 1, 2,
 //!     3, 4, 5,
@@ -163,18 +173,19 @@
 //! stack-allocated array to use as the backing store:
 //!
 //! ```rust
-//! # use grid::{GridBuf, GridMut};
+//! use grid::{GridBuf, GridMut};
+//!
 //! let mut numbers = GridBuf::with_store(3, 3, [0i32; 9]);
 //! numbers.set(0, 0, 1);
 //! numbers.set(1, 1, 2);
 //! numbers.set(2, 2, 3);
 //!
-//! assert_eq!(numbers.into_store(), [
+//! assert_eq!(numbers.to_store(), [
 //!     1, 0, 0,
 //!     0, 2, 0,
 //!     0, 0, 3,
 //! ]);
-//!```
+//! ```
 //!
 //! No heap-allocations required! You can store the data however you want, recycle it
 //! between calls, or edit data in-place with a more convenient API. For example, if you
@@ -194,7 +205,8 @@
 //! For example, rather than filling an entire grid, I could fill in just a portion of it:
 //!
 //! ```rust
-//! # use grid::{Grid, GridMut};
+//! use grid::{Grid, GridMut};
+//!
 //! let mut block = [
 //!     [0, 0, 0, 0, 0],
 //!     [0, 0, 0, 0, 0],
@@ -216,7 +228,8 @@
 //! When you have a view, all coordinates are local to its top-left:
 //!
 //! ```rust
-//! # use grid::{Grid, GridMut};
+//! use grid::{Grid, GridMut};
+//!
 //! let mut numbers = [
 //!     ['A', 'B', 'C', 'D'],
 //!     ['E', 'F', 'G', 'H'],
@@ -239,7 +252,7 @@
 //! each other. For example, if I have one grid, I can "draw" another grid on top of it
 //! like so:
 //!
-//!```rust
+//! ```rust
 //! use grid::{GridBuf, Grid, GridMut};
 //!
 //! let mut dst = [
@@ -267,8 +280,8 @@
 //!
 //! # Generic Code
 //!
-//! Because the entire API uses the the [`Grid`] and [`GridMut`] traits, it is possible
-//! to write algorithms that can work on any kinds of grids with any sort of data storage,
+//! Because the entire API uses the the [`Grid`] and [`GridMut`] traits,
+//! it is possible to write algorithms that can work on any kinds of grids with any sort of data storage,
 //! with almost no glue required to make them work together.
 //!
 //! When writing an algorithm to operate on grids, best practics is to do so generically.
@@ -320,6 +333,42 @@
 //! Because the function is written generically, it can be called on any type of grid,
 //! with any sort of fill value. It could be numbers, chars, enums, structs, or anything.
 //!
+//! # Roadmap
+//!
+//! There are currently some missing features, traits that should be implemented, and
+//! probably a few bugs to sniff out. I don't have an exact roadmap yet, but for now
+//! I'll put a few notes here about what needs to be done.
+//!
+//! - [ ] It doesn't really have a name. I was thinking of calling it `moz` maybe? Unsure,
+//! open to suggestions on this. I don't know if I want to put this on [crates.io](crates.io),
+//! but if I was going to it would need a unique name.
+//! - [ ] The crate's approach to iterators needs to be evaluated, as I feel like some
+//! iterators can be improved, some better naming conventions can be used, and there are
+//! probably certain useful iterators that are straight up missing.
+//! - [ ] There are currently no tests, so one big task I need to do is write a full set
+//! of tests for all the constructors, methods, iterators, and trait implementations to
+//! make sure everything works correctly and to prevent future breaking changes.
+//! - [ ] In addition to tests, I would like to fill out the documentation more, with
+//! more explanations of methods, `# Example` sections to show how to use them (and act as
+//! doc tests), and more clear documentation of which functions can panic and under which
+//! circumstances.
+//! - [ ] Many essential std traits are likely not implemented yet that should be, and
+//! there are also probably traits that the library should be supplying that I have not
+//! discovered yet.
+//! - [ ] Maybe `GridBuf`'s backing store should maybe be driven by a custom trait, or
+//! wrapper type, to make it more flexible. Not sure yet.
+//! - [ ] I may want more grid implementations, such as a `HashMap`-backed grid, a
+//! sparse grid, or other useful features like that.
+//! - [ ] Serde support should probably be feature-gated.
+//! - [ ] I haven't written no-std stuff before, but I feel like a no-std version of
+//! this library could be possible, so I'd need to do some looking into that.
+//! - [ ] Does some concept of a type representing a coordinate or rectangle fit into the
+//! scope of this library? The usefulness of coordinate types is already proven, but the
+//! current `usize` requirement of sampling grids poses some problems that need addressed:
+//! are all unsigned integers allowed? Are signed integers allowed? Is `-1` outside the
+//! bounds of a grid, or does it wrap around? Rust's standard library does not answer
+//! these questions and only uses `usize` for sampling, so there's no basis for this
+//! answer at least within the core libraries.
 
 mod col;
 mod col_iter;
@@ -344,9 +393,12 @@ pub use row_iter::*;
 pub use rows_iter::*;
 pub use view::*;
 
-// This is where I've been doing some ad-hoc testing. The display() function here is a
-// pretty way to display a grid that I've been using to test that the functions are
-// working correctly, so feel free to use this if you want to contribute to the project.
+/*
+This is where I've been doing some ad-hoc testing. The display() function here is a
+pretty way to display a grid that I've been using to test that the functions are
+working correctly, so feel free to use this if you want to contribute to the project.
+*/
+
 /*
 #[test]
 fn test() {

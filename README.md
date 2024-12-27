@@ -145,8 +145,8 @@ use grid::{GridBuf, GridMut};
 let mut numbers = GridBuf::new(3, 3);
 numbers.set(1, 1, 3);
 
-assert_eq!(numbers.into_store(), vec![
-    0, 0, 0,
+assert_eq!(numbers.to_store(), vec![
+    0, 0, 0, 
     0, 3, 0,
     0, 0, 0,
 ]);
