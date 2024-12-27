@@ -11,22 +11,110 @@ pub trait Grid {
     type Root: Grid<Item = Self::Item>;
 
     /// The root grid for this one. If this grid is the root, this returns `self`.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// use std::ptr;
+    ///
+    /// let nums = [
+    ///     [1, 2],
+    ///     [3, 4],
+    /// ];
+    ///
+    /// let nums_view = nums.view(0, 0, 2, 2);
+    ///
+    /// assert!(ptr::addr_eq(&nums, nums.root()));
+    /// assert!(ptr::addr_eq(&nums, nums_view.root()));
+    /// assert!(!ptr::addr_eq(&nums_view, nums_view.root()));
+    /// ```
     fn root(&self) -> &Self::Root;
 
     /// This grid's x-offset from the root grid. For the root grid this is `0`.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// let nums_view = nums.view(1, 2, 2, 1);
+    ///
+    /// assert_eq!(nums.root_x(), 0);
+    /// assert_eq!(nums_view.root_x(), 1);
+    /// ```
     fn root_x(&self) -> usize;
 
     /// This grid's y-offset from the root grid. For the root grid this is `0`.
+    ///
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// let nums_view = nums.view(1, 2, 2, 1);
+    ///
+    /// assert_eq!(nums.root_y(), 0);
+    /// assert_eq!(nums_view.root_y(), 2);
+    /// ```
     fn root_y(&self) -> usize;
 
     /// Width of the grid (how many columns it has).
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// let nums_view = nums.view(1, 2, 2, 1);
+    ///
+    /// assert_eq!(nums.width(), 3);
+    /// assert_eq!(nums_view.width(), 2);
+    /// ```
     fn width(&self) -> usize;
 
     /// Height of the grid (how many rows it has).
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// let nums_view = nums.view(1, 2, 2, 1);
+    ///
+    /// assert_eq!(nums.height(), 3);
+    /// assert_eq!(nums_view.height(), 1);
+    /// ```
     fn height(&self) -> usize;
 
     /// Returns a reference to the value stored at `(x, y)` in the grid, or `None` if
     /// the provided coordinate is out of bounds.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     ['A', 'B'],
+    ///     ['C', 'D'],
+    /// ];
+    ///
+    /// assert_eq!(nums.get(0, 0), Some(&'A'));
+    /// assert_eq!(nums.get(1, 0), Some(&'B'));
+    /// assert_eq!(nums.get(0, 1), Some(&'C'));
+    /// assert_eq!(nums.get(1, 1), Some(&'D'));
+    /// assert_eq!(nums.get(5, 0), None);
+    /// assert_eq!(nums.get(2, 99), None);
+    /// ```
     fn get(&self, x: usize, y: usize) -> Option<&Self::Item>;
 
     /// Returns a reference to the value stored at `(x, y)` in the grid, skipping
@@ -39,6 +127,23 @@ pub trait Grid {
     /// even if the resulting reference is not used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     ['A', 'B'],
+    ///     ['C', 'D'],
+    /// ];
+    ///
+    /// unsafe {
+    ///     assert_eq!(nums.get_unchecked(0, 0), &'A');
+    ///     assert_eq!(nums.get_unchecked(1, 0), &'B');
+    ///     assert_eq!(nums.get_unchecked(0, 1), &'C');
+    ///     assert_eq!(nums.get_unchecked(1, 1), &'D');
+    /// }
+    /// ```
     unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item;
 
     /// Returns row `y` of the grid as a slice if it is able to do so. Algorithms that work
@@ -47,9 +152,47 @@ pub trait Grid {
     /// which can be faster than manually copying elements one-by-one.
     ///
     /// [`copy_from_slice`]: https://doc.rust-lang.org/std/primitive.slice.html#method.copy_from_slice
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    ///     [6, 7, 8],
+    /// ];
+    ///
+    /// assert_eq!(nums.row_slice(0), Some([0, 1, 2].as_slice()));
+    /// assert_eq!(nums.row_slice(1), Some([3, 4, 5].as_slice()));
+    /// assert_eq!(nums.row_slice(2), Some([6, 7, 8].as_slice()));
+    /// assert_eq!(nums.row_slice(3), None);
+    /// ```
     fn row_slice(&self, y: usize) -> Option<&[Self::Item]>;
 
     /// Returns true if both grids are the same size.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [1, 2],
+    ///     [3, 4],
+    /// ];
+    ///
+    /// assert!(nums.same_size(&[
+    ///     [0, 0],
+    ///     [0, 0],
+    /// ]));
+    /// assert!(!nums.same_size(&[
+    ///     [0, 0, 0],
+    ///     [0, 0, 0],
+    /// ]));
+    /// assert!(!nums.same_size(&[
+    ///     [0, 0],
+    ///     [0, 0],
+    ///     [0, 0],
+    /// ]));
+    /// ```
     #[inline]
     fn same_size<G2: Grid>(&self, other: &G2) -> bool {
         self.width() == other.width() && self.height() == other.height()
