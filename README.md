@@ -179,7 +179,7 @@ numbers.set(0, 0, 1);
 numbers.set(1, 1, 2);
 numbers.set(2, 2, 3);
 
-assert_eq!(numbers.into_store(), [
+assert_eq!(numbers.to_store(), [
     1, 0, 0,
     0, 2, 0,
     0, 0, 3,
