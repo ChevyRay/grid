@@ -44,7 +44,7 @@ impl<T, S> GridBuf<T, S> {
     }
 
     #[inline]
-    pub fn into_store(self) -> S {
+    pub fn to_store(self) -> S {
         self.store
     }
 }
