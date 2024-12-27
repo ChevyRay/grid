@@ -162,7 +162,7 @@ impl<'a, G: GridMut> Col<&'a mut G> {
         let col = col.into();
         assert_eq!(self.len(), col.len());
         for (dst, src) in self.iter_mut().zip(col) {
-            *dst = src.clone();
+            *dst = *src;
         }
     }
 
