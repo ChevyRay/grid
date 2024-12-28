@@ -115,6 +115,12 @@ pub trait Grid {
         (self.width(), self.height())
     }
 
+    /// Surface area of the grid, equal to `width * height`.
+    #[inline]
+    fn area(&self) -> usize {
+        self.width() * self.height()
+    }
+
     /// Returns a reference to the value stored at `(x, y)` in the grid, or `None` if
     /// the provided coordinate is out of bounds.
     ///
@@ -298,7 +304,7 @@ pub trait Grid {
         Self::Item: Clone,
         Self: Sized,
     {
-        let mut vec = Vec::with_capacity(self.width() * self.height());
+        let mut vec = Vec::with_capacity(self.area());
         for row in self.rows() {
             if let Some(row) = row.as_slice() {
                 vec.extend_from_slice(row);
