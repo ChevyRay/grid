@@ -394,12 +394,6 @@ pub use row_iter::*;
 pub use rows_iter::*;
 pub use view::*;
 
-/*
-This is where I've been doing some ad-hoc testing. The display() function here is a
-pretty way to display a grid that I've been using to test that the functions are
-working correctly, so feel free to use this if you want to contribute to the project.
-*/
-
 #[test]
 fn test() {
     //let grid_a = [[0, 1, 2], [3, 4, 5], [6, 7, 14]];
