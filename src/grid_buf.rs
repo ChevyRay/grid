@@ -22,6 +22,8 @@ pub type ArrGrid<T, const N: usize> = GridBuf<T, [T; N]>;
 pub type SliceGrid<'a, T> = GridBuf<T, &'a [T]>;
 
 impl<T, S> GridBuf<T, S> {
+    /// Create a new grid using the provided storage. Panics if the length
+    /// of `store` is not equal to `width * height`.
     #[inline]
     pub fn with_store(width: usize, height: usize, store: S) -> Self
     where
@@ -36,6 +38,7 @@ impl<T, S> GridBuf<T, S> {
         }
     }
 
+    /// Get the contents of the grid as a slice.
     #[inline]
     pub fn as_slice(&self) -> &[T]
     where
@@ -44,6 +47,7 @@ impl<T, S> GridBuf<T, S> {
         self.store.as_ref()
     }
 
+    /// Get the contents of the grid as a mutable slice.
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T]
     where
@@ -52,6 +56,7 @@ impl<T, S> GridBuf<T, S> {
         self.store.as_mut()
     }
 
+    /// Drop the grid and return its storage.
     #[inline]
     pub fn to_store(self) -> S {
         self.store
@@ -59,6 +64,7 @@ impl<T, S> GridBuf<T, S> {
 }
 
 impl<T> VecGrid<T> {
+    /// Create a new `VecGrid` filled with values from the provided function.
     #[inline]
     pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, fill: F) -> Self {
         let len = width.checked_mul(height).expect("grid capacity overflow");
@@ -72,6 +78,7 @@ impl<T> VecGrid<T> {
         }
     }
 
+    /// Create a new `VecGrid` fill with default values.
     #[inline]
     pub fn new(width: usize, height: usize) -> Self
     where
@@ -82,6 +89,8 @@ impl<T> VecGrid<T> {
 }
 
 impl<'a, T> SliceGrid<'a, T> {
+    /// Create a new `SliceGrid` from the provided slice. Panics if the length of
+    /// the slice is not exactly `width * height`.
     #[inline]
     pub fn new(width: usize, height: usize, slice: &'a [T]) -> Self {
         Self::with_store(width, height, slice)
@@ -89,11 +98,13 @@ impl<'a, T> SliceGrid<'a, T> {
 }
 
 impl<T, const N: usize> ArrGrid<T, N> {
+    /// Create a new `ArrGrid` filled with values from the provided function.
     #[inline]
     pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, mut fill: F) -> Self {
         Self::with_store(width, height, std::array::from_fn(|_| fill()))
     }
 
+    /// Create a new `ArrGrid` fill with default values.
     #[inline]
     pub fn new(width: usize, height: usize) -> Self
     where
