@@ -160,10 +160,8 @@ impl<G: Grid> Grid for View<&mut G> {
 }
 
 impl<G: GridMut> GridMut for View<&mut G> {
-    type RootMut = G;
-
     #[inline]
-    fn root_mut(&mut self) -> &mut Self::RootMut {
+    fn root_mut(&mut self) -> &mut Self::Root {
         self.grid
     }
 
