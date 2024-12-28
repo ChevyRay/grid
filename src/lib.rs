@@ -374,6 +374,7 @@
 mod col;
 mod col_iter;
 mod cols_iter;
+mod coord;
 mod grid;
 mod grid_buf;
 mod grid_iter;
@@ -385,6 +386,7 @@ mod view;
 
 pub use col::*;
 pub use col_iter::*;
+pub use coord::*;
 pub use grid::*;
 pub use grid_buf::*;
 pub use grid_iter::*;
@@ -396,11 +398,10 @@ pub use view::*;
 
 #[test]
 fn test() {
-    //let grid_a = [[0, 1, 2], [3, 4, 5], [6, 7, 14]];
-
-    let grid = ArrGrid::with_store(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-    let json = serde_json::to_string_pretty(&grid).unwrap();
-    println!("{json}");
-    let grid2: ArrGrid<i32, 9> = serde_json::from_str(&json).unwrap();
-    assert!(grid.eq_grid(&grid2));
+    let grid = [
+        [0, 1, 2], //
+        [3, 4, 5], //
+        [6, 7, 8], //
+    ];
+    dbg!(grid.get_at(Wrap((-1, 4))));
 }

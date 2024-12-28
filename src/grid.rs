@@ -1,5 +1,5 @@
 use crate::cols_iter::ColsIter;
-use crate::{ArrGrid, Col, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View};
+use crate::{ArrGrid, Col, Coord, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View};
 use std::fmt::{Debug, Write};
 
 /// A type representing an immutable 2D array.
@@ -168,6 +168,26 @@ pub trait Grid {
     /// }
     /// ```
     unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item;
+
+    /// Returns a reference to the value stored at the provided coordinate in the grid, or
+    /// `None` if the coordinate is invalid.
+    #[inline]
+    fn get_at<C: Coord>(&self, coord: C) -> Option<&Self::Item> {
+        self.get(
+            coord.prepare_x(self.width())?,
+            coord.prepare_y(self.height())?,
+        )
+    }
+
+    /// Returns a reference to the value stored at the provided coordinate in the grid,
+    /// skipping any bounds checks.
+    #[inline]
+    unsafe fn get_at_unchecked<C: Coord>(&self, coord: C) -> &Self::Item {
+        self.get_unchecked(
+            coord.prepare_x(self.width()).unwrap_unchecked(),
+            coord.prepare_y(self.height()).unwrap_unchecked(),
+        )
+    }
 
     /// Returns row `y` of the grid as a slice if it is able to do so. Algorithms that work
     /// on large portions of the grid may use this to look for performance gain. For example,
