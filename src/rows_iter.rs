@@ -149,6 +149,6 @@ where
 {
     #[inline]
     fn eq(&self, other: &RowsIter<&B>) -> bool {
-        self.clone().zip(other.clone()).all(|(a, b)| a == b)
+        self.len() == other.len() && self.clone().zip(other.clone()).all(|(a, b)| a == b)
     }
 }
