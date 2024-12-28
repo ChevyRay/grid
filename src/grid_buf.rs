@@ -153,8 +153,10 @@ impl<T, S: AsRef<[T]>> Grid for GridBuf<T, S> {
 }
 
 impl<T, S: AsRef<[T]> + AsMut<[T]>> GridMut for GridBuf<T, S> {
+    type RootMut = Self;
+
     #[inline]
-    fn root_mut(&mut self) -> &mut Self::Root {
+    fn root_mut(&mut self) -> &mut Self::RootMut {
         self
     }
 

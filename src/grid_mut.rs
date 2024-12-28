@@ -3,8 +3,12 @@ use crate::{Col, Grid, GridIter, Row, RowsIter, View};
 
 /// A type representing a mutable 2D array.
 pub trait GridMut: Grid {
+    /// The root grid type. [Views](View) use this to store a reference to the root
+    /// grid so they can read and modify it.
+    type RootMut: GridMut<Item = Self::Item>;
+
     /// The root grid for this one. If this grid is the root, this returns `self`.
-    fn root_mut(&mut self) -> &mut Self::Root;
+    fn root_mut(&mut self) -> &mut Self::RootMut;
 
     /// Returns a mutable reference to the value stored at `(x, y)` in the grid,
     /// or `None` if the provided coordinate is out of bounds.
@@ -62,7 +66,7 @@ pub trait GridMut: Grid {
         y: usize,
         w: usize,
         h: usize,
-    ) -> Option<View<&mut Self::Root>> {
+    ) -> Option<View<&mut Self::RootMut>> {
         if x + w <= self.width() && y + h <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
@@ -75,7 +79,7 @@ pub trait GridMut: Grid {
     /// Get a mutable [`View`] into this grid. Panicks if the provided region is out
     /// of bounds.
     #[inline]
-    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> View<&mut Self::Root> {
+    fn view_mut(&mut self, x: usize, y: usize, w: usize, h: usize) -> View<&mut Self::RootMut> {
         self.try_view_mut(x, y, w, h)
             .expect("view does not overlap grid's bounds")
     }
@@ -192,8 +196,10 @@ pub trait GridMut: Grid {
 }
 
 impl<T, const W: usize, const H: usize> GridMut for [[T; W]; H] {
+    type RootMut = Self;
+
     #[inline]
-    fn root_mut(&mut self) -> &mut Self::Root {
+    fn root_mut(&mut self) -> &mut Self::RootMut {
         self
     }
 
