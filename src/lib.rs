@@ -393,9 +393,6 @@ pub use row_iter::*;
 pub use rows_iter::*;
 pub use view::*;
 
-pub type VecGrid<T> = GridBuf<T, Vec<T>>;
-pub type ArrGrid<T, const N: usize> = GridBuf<T, [T; N]>;
-
 /*
 This is where I've been doing some ad-hoc testing. The display() function here is a
 pretty way to display a grid that I've been using to test that the functions are

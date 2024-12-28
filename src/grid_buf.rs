@@ -12,14 +12,16 @@ pub struct GridBuf<T, S = Vec<T>> {
     marker: PhantomData<T>,
 }
 
+pub type VecGrid<T> = GridBuf<T, Vec<T>>;
+pub type ArrGrid<T, const N: usize> = GridBuf<T, [T; N]>;
+
 impl<T, S> GridBuf<T, S> {
     #[inline]
     pub fn with_store(width: usize, height: usize, store: S) -> Self
     where
         S: AsRef<[T]>,
     {
-        let len = width.checked_mul(height).expect("grid capacity overflow");
-        assert_eq!(len, store.as_ref().len());
+        assert_eq!(width.checked_mul(height), Some(store.as_ref().len()));
         Self {
             width,
             height,
@@ -50,7 +52,7 @@ impl<T, S> GridBuf<T, S> {
     }
 }
 
-impl<T> GridBuf<T, Vec<T>> {
+impl<T> VecGrid<T> {
     #[inline]
     pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, fill: F) -> Self {
         let len = width.checked_mul(height).expect("grid capacity overflow");
@@ -62,6 +64,21 @@ impl<T> GridBuf<T, Vec<T>> {
             store,
             marker: PhantomData,
         }
+    }
+
+    #[inline]
+    pub fn new(width: usize, height: usize) -> Self
+    where
+        T: Default,
+    {
+        Self::new_with(width, height, T::default)
+    }
+}
+
+impl<T, const N: usize> ArrGrid<T, N> {
+    #[inline]
+    pub fn new_with<F: FnMut() -> T>(width: usize, height: usize, mut fill: F) -> Self {
+        Self::with_store(width, height, std::array::from_fn(|_| fill()))
     }
 
     #[inline]
