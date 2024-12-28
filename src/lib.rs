@@ -136,14 +136,15 @@
 //!
 //! The [`GridBuf`] struct is a wrapper over any type that implements `AsRef<[T]>` and/or
 //! `AsMut<[T]>` that does all this for you and allows you to treat the data as if it
-//! was stored in a grid. This has a few different useful purposes.
+//! was stored in a grid. This has a few different useful purposes. Three common forms
+//! are provided: [`VecGrid`], [`ArrGrid`], and [`SliceGrid`].
 //!
 //! You can create a heap-allocated grid:
 //!
 //! ```rust
-//! use grid::{GridBuf, GridMut};
+//! use grid::{VecGrid, GridMut};
 //!
-//! let mut numbers = GridBuf::new(3, 3);
+//! let mut numbers = VecGrid::new(3, 3);
 //! numbers.set(1, 1, 3);
 //!
 //! assert_eq!(numbers.to_store(), vec![

@@ -12,8 +12,14 @@ pub struct GridBuf<T, S = Vec<T>> {
     marker: PhantomData<T>,
 }
 
+/// A grid implementation using a `Vec` for storage.
 pub type VecGrid<T> = GridBuf<T, Vec<T>>;
+
+/// A grid implementation using an array for storage.
 pub type ArrGrid<T, const N: usize> = GridBuf<T, [T; N]>;
+
+/// A grid implementation using a slice for storage.
+pub type SliceGrid<'a, T> = GridBuf<T, &'a [T]>;
 
 impl<T, S> GridBuf<T, S> {
     #[inline]
@@ -72,6 +78,13 @@ impl<T> VecGrid<T> {
         T: Default,
     {
         Self::new_with(width, height, T::default)
+    }
+}
+
+impl<'a, T> SliceGrid<'a, T> {
+    #[inline]
+    pub fn new(width: usize, height: usize, slice: &'a [T]) -> Self {
+        Self::with_store(width, height, slice)
     }
 }
 
