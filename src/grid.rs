@@ -99,6 +99,22 @@ pub trait Grid {
     /// ```
     fn height(&self) -> usize;
 
+    /// Size of the grid as a `(width, height)` pair.
+    ///
+    /// ```
+    /// # use grid::Grid;
+    /// let nums = [
+    ///     [0, 1, 2],
+    ///     [3, 4, 5],
+    /// ];
+    ///
+    /// assert_eq!(nums.size(), (3, 2));
+    /// ```
+    #[inline]
+    fn size(&self) -> (usize, usize) {
+        (self.width(), self.height())
+    }
+
     /// Returns a reference to the value stored at `(x, y)` in the grid, or `None` if
     /// the provided coordinate is out of bounds.
     ///
