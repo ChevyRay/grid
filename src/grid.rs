@@ -369,10 +369,17 @@ pub trait Grid {
     #[inline]
     fn eq_grid<'a, H: Grid>(&'a self, other: &'a H) -> bool
     where
-        RowsIter<&'a Self>: PartialEq<RowsIter<&'a H>>,
+        Self::Item: PartialEq<H::Item>,
         Self: Sized,
     {
-        self.rows() == other.rows()
+        self.same_size(other)
+            && self.rows().zip(other.rows()).all(|(a, b)| {
+                if let (Some(a), Some(b)) = (a.as_slice(), b.as_slice()) {
+                    a == b
+                } else {
+                    a.iter().zip(b.iter()).all(|(a, b)| a == b)
+                }
+            })
     }
 
     #[inline]
