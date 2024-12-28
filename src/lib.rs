@@ -402,10 +402,11 @@ working correctly, so feel free to use this if you want to contribute to the pro
 
 #[test]
 fn test() {
-    let grid_a = [[0, 1, 2], [3, 4, 5], [6, 7, 14]];
-    let grid_b = [[0, 1], [2, 3]];
-    let grid_c = [[0, 0], [0, 0]];
+    //let grid_a = [[0, 1, 2], [3, 4, 5], [6, 7, 14]];
 
-    println!("{:?}", grid_a.view(0, 0, 3, 3));
-    //assert_eq!(grid_a, grid_b);
+    let grid = ArrGrid::with_store(3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    let json = serde_json::to_string_pretty(&grid).unwrap();
+    println!("{json}");
+    let grid2: ArrGrid<i32, 9> = serde_json::from_str(&json).unwrap();
+    assert!(grid.eq_grid(&grid2));
 }
