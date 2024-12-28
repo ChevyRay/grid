@@ -1,6 +1,6 @@
 use crate::cols_iter::ColsIter;
-use crate::{Col, GridBuf, GridIter, GridMut, Row, RowsIter, View};
-use std::fmt::{Debug, Formatter, Write};
+use crate::{ArrGrid, Col, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View};
+use std::fmt::{Debug, Write};
 
 /// A type representing an immutable 2D array.
 pub trait Grid {
@@ -256,7 +256,7 @@ pub trait Grid {
     /// and clone this entire grid into it. Panics if `N` is not exactly the area
     /// of the grid (`width * height`).
     #[inline]
-    fn to_arr_buf<const N: usize>(&self) -> GridBuf<Self::Item, [Self::Item; N]>
+    fn to_arr_grid<const N: usize>(&self) -> ArrGrid<Self::Item, N>
     where
         Self::Item: Default + Clone,
         Self: Sized,
@@ -277,7 +277,7 @@ pub trait Grid {
 
     /// Create a stack-allocated [`GridBuf`], using a [`Vec`] for storage, and
     /// clone this entire grid into it.
-    fn to_vec_grid(&self) -> GridBuf<Self::Item, Vec<Self::Item>>
+    fn to_vec_grid(&self) -> VecGrid<Self::Item>
     where
         Self::Item: Clone,
         Self: Sized,
