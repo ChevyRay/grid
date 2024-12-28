@@ -399,34 +399,12 @@ pretty way to display a grid that I've been using to test that the functions are
 working correctly, so feel free to use this if you want to contribute to the project.
 */
 
-/*
 #[test]
 fn test() {
-    use std::fmt::{Debug, Write};
-    fn display<T: Debug, G: Grid<Item = T>>(grid: &G) {
-        let mut s = String::new();
-        let mut len = 0;
-        for y in 0..grid.height() {
-            for x in 0..grid.width() {
-                let val = grid.get(x, y).unwrap();
-                s.clear();
-                write!(s, "{:?}", val).unwrap();
-                len = len.max(s.len());
-            }
-        }
-        for y in 0..grid.height() {
-            for x in 0..grid.width() {
-                let val = grid.get(x, y).unwrap();
-                s.clear();
-                write!(s, "{:?}", val).unwrap();
-                while s.len() < len {
-                    s.push(' ');
-                }
-                print!("[{}]", s);
-            }
-            println!();
-        }
-        println!();
-    }
+    let grid_a = [[0, 1, 2], [3, 4, 5], [6, 7, 14]];
+    let grid_b = [[0, 1], [2, 3]];
+    let grid_c = [[0, 0], [0, 0]];
+
+    println!("{:?}", grid_a.view(0, 0, 3, 3));
+    //assert_eq!(grid_a, grid_b);
 }
-*/

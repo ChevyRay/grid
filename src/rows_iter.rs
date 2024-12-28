@@ -142,3 +142,13 @@ impl<G: GridMut> ExactSizeIterator for RowsIter<&mut G> {
 }
 
 impl<G: GridMut> FusedIterator for RowsIter<&mut G> {}
+
+impl<A: Grid, B: Grid> PartialEq<RowsIter<&B>> for RowsIter<&A>
+where
+    A::Item: PartialEq<B::Item>,
+{
+    #[inline]
+    fn eq(&self, other: &RowsIter<&B>) -> bool {
+        self.clone().zip(other.clone()).all(|(a, b)| a == b)
+    }
+}

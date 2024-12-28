@@ -1,4 +1,5 @@
 use crate::{Grid, GridMut, RowIter};
+use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
 
 /// A single row of a grid.
@@ -7,6 +8,16 @@ use std::ops::Deref;
 pub struct Row<GridRef> {
     grid: GridRef,
     y: usize,
+}
+
+impl<G: Grid<Item: Debug>> Debug for Row<&G> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut list = f.debug_list();
+        for x in 0..self.grid.width() {
+            list.entry(self.grid.get(x, self.y).unwrap());
+        }
+        list.finish()
+    }
 }
 
 impl<GridRef> Row<GridRef> {
@@ -276,5 +287,18 @@ impl<'a, G: GridMut> IntoIterator for &'a mut Row<&'a mut G> {
     fn into_iter(self) -> Self::IntoIter {
         let w = self.grid.width();
         RowIter::new(self.grid, self.y, w)
+    }
+}
+
+impl<A: Grid, B: Grid> PartialEq<Row<&B>> for Row<&A>
+where
+    A::Item: PartialEq<B::Item>,
+{
+    #[inline]
+    fn eq(&self, other: &Row<&B>) -> bool {
+        match (self.as_slice(), other.as_slice()) {
+            (Some(a), Some(b)) => a == b,
+            _ => self.iter() == other.iter(),
+        }
     }
 }

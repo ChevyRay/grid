@@ -1,4 +1,5 @@
 use crate::{Grid, GridMut};
+use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
 
 /// Sub-section of a larger grid.
@@ -189,5 +190,25 @@ impl<G: GridMut> GridMut for View<&mut G> {
         } else {
             None
         }
+    }
+}
+
+impl<A: Grid, B: Grid> PartialEq<View<&B>> for View<&A>
+where
+    A::Item: PartialEq<B::Item>,
+{
+    #[inline]
+    fn eq(&self, other: &View<&B>) -> bool {
+        self.eq_grid(other)
+    }
+}
+
+impl<G: Grid> Debug for View<&G>
+where
+    G::Item: Debug,
+{
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.debug_fmt(f)
     }
 }

@@ -1,4 +1,5 @@
 use crate::{Grid, GridMut};
+use std::fmt::{Debug, Formatter};
 use std::iter::FusedIterator;
 
 /// Iterator over the values in a row.
@@ -14,6 +15,19 @@ impl<GridRef> RowIter<GridRef> {
     #[inline]
     pub(crate) fn new(grid: GridRef, y: usize, r: usize) -> Self {
         Self { grid, x: 0, y, r }
+    }
+}
+
+impl<G: Grid<Item: Debug>> Debug for RowIter<&G> {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str("RowIter(")?;
+        let mut list = f.debug_list();
+        for x in self.x..self.r {
+            list.entry(self.grid.get(x, self.y).unwrap());
+        }
+        list.finish()?;
+        f.write_str(")")
     }
 }
 
@@ -143,3 +157,13 @@ impl<G: GridMut> ExactSizeIterator for RowIter<&mut G> {
 }
 
 impl<G: GridMut> FusedIterator for RowIter<&mut G> {}
+
+impl<A: Grid, B: Grid> PartialEq<RowIter<&B>> for RowIter<&A>
+where
+    A::Item: PartialEq<B::Item>,
+{
+    #[inline]
+    fn eq(&self, other: &RowIter<&B>) -> bool {
+        self.len() == other.len() && self.clone().zip(other.clone()).all(|(a, b)| a == b)
+    }
+}

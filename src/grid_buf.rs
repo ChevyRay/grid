@@ -1,6 +1,7 @@
 use crate::{Grid, GridIter, GridMut};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt::{Debug, Formatter};
 use std::marker::PhantomData;
 
 /// A grid implementation for different storage types.
@@ -219,5 +220,12 @@ impl<'de, T, S: Deserialize<'de>> Deserialize<'de> for GridBuf<T, S> {
             store,
             marker: PhantomData,
         })
+    }
+}
+
+impl<T: Debug, S: AsRef<[T]>> Debug for GridBuf<T, S> {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.debug_fmt(f)
     }
 }

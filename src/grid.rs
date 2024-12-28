@@ -1,5 +1,6 @@
 use crate::cols_iter::ColsIter;
 use crate::{Col, GridBuf, GridIter, GridMut, Row, RowsIter, View};
+use std::fmt::{Debug, Formatter, Write};
 
 /// A type representing an immutable 2D array.
 pub trait Grid {
@@ -341,6 +342,45 @@ pub trait Grid {
     #[inline]
     fn row(&self, y: usize) -> Row<&Self> {
         self.try_row(y).expect("row index out of bounds")
+    }
+
+    #[inline]
+    fn eq_grid<'a, H: Grid>(&'a self, other: &'a H) -> bool
+    where
+        RowsIter<&'a Self>: PartialEq<RowsIter<&'a H>>,
+        Self: Sized,
+    {
+        self.rows() == other.rows()
+    }
+
+    #[inline]
+    fn debug_fmt<W: Write>(&self, mut f: W) -> std::fmt::Result
+    where
+        Self::Item: Debug,
+    {
+        let mut s = String::new();
+        let mut len = 0;
+        for y in 0..self.height() {
+            for x in 0..self.width() {
+                let val = self.get(x, y).unwrap();
+                s.clear();
+                write!(s, "{:?}", val)?;
+                len = len.max(s.len());
+            }
+        }
+        for y in 0..self.height() {
+            for x in 0..self.width() {
+                let val = self.get(x, y).unwrap();
+                s.clear();
+                write!(s, "{:?}", val)?;
+                while s.len() < len {
+                    s.push(' ');
+                }
+                write!(f, "[{}]", s)?;
+            }
+            writeln!(f)?;
+        }
+        writeln!(f)
     }
 
     // IDEA: getting views from ranges could also work
