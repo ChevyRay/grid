@@ -14,13 +14,13 @@ pub trait Coord {
 
     /// Convert the x-coordinate to grid space, given the provided grid width.
     #[inline]
-    fn prepare_x(&self, w: usize) -> Option<usize> {
+    fn grid_x(&self, w: usize) -> Option<usize> {
         self.x().bounded(w)
     }
 
     /// Convert the y-coordinate to grid space, given the provided grid height.
     #[inline]
-    fn prepare_y(&self, h: usize) -> Option<usize> {
+    fn grid_y(&self, h: usize) -> Option<usize> {
         self.y().bounded(h)
     }
 }
@@ -66,12 +66,12 @@ impl<C: Coord> Coord for Wrap<C> {
     }
 
     #[inline]
-    fn prepare_x(&self, w: usize) -> Option<usize> {
+    fn grid_x(&self, w: usize) -> Option<usize> {
         self.0.x().wrapped(w)
     }
 
     #[inline]
-    fn prepare_y(&self, h: usize) -> Option<usize> {
+    fn grid_y(&self, h: usize) -> Option<usize> {
         self.0.y().wrapped(h)
     }
 }
@@ -95,7 +95,7 @@ impl<C: Coord> Coord for WrapX<C> {
     }
 
     #[inline]
-    fn prepare_x(&self, w: usize) -> Option<usize> {
+    fn grid_x(&self, w: usize) -> Option<usize> {
         self.0.x().wrapped(w)
     }
 }
@@ -119,7 +119,7 @@ impl<C: Coord> Coord for WrapY<C> {
     }
 
     #[inline]
-    fn prepare_y(&self, h: usize) -> Option<usize> {
+    fn grid_y(&self, h: usize) -> Option<usize> {
         self.0.y().wrapped(h)
     }
 }
@@ -143,12 +143,12 @@ impl<C: Coord> Coord for Clamp<C> {
     }
 
     #[inline]
-    fn prepare_x(&self, w: usize) -> Option<usize> {
+    fn grid_x(&self, w: usize) -> Option<usize> {
         self.0.x().clamped(w)
     }
 
     #[inline]
-    fn prepare_y(&self, h: usize) -> Option<usize> {
+    fn grid_y(&self, h: usize) -> Option<usize> {
         self.0.y().clamped(h)
     }
 }
@@ -172,7 +172,7 @@ impl<C: Coord> Coord for ClampX<C> {
     }
 
     #[inline]
-    fn prepare_x(&self, w: usize) -> Option<usize> {
+    fn grid_x(&self, w: usize) -> Option<usize> {
         self.0.x().clamped(w)
     }
 }
@@ -196,7 +196,7 @@ impl<C: Coord> Coord for ClampY<C> {
     }
 
     #[inline]
-    fn prepare_y(&self, h: usize) -> Option<usize> {
+    fn grid_y(&self, h: usize) -> Option<usize> {
         self.0.y().clamped(h)
     }
 }

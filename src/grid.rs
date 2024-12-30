@@ -173,19 +173,16 @@ pub trait Grid {
     /// `None` if the coordinate is invalid.
     #[inline]
     fn get_at<C: Coord>(&self, coord: C) -> Option<&Self::Item> {
-        self.get(
-            coord.prepare_x(self.width())?,
-            coord.prepare_y(self.height())?,
-        )
+        self.get(coord.grid_x(self.width())?, coord.grid_y(self.height())?)
     }
 
     /// Returns a reference to the value stored at the provided coordinate in the grid,
     /// skipping any bounds checks.
     #[inline]
-    unsafe fn get_at_unchecked<C: Coord>(&self, coord: C) -> &Self::Item {
+    unsafe fn get_unchecked_at<C: Coord>(&self, coord: C) -> &Self::Item {
         self.get_unchecked(
-            coord.prepare_x(self.width()).unwrap_unchecked(),
-            coord.prepare_y(self.height()).unwrap_unchecked(),
+            coord.grid_x(self.width()).unwrap_unchecked(),
+            coord.grid_y(self.height()).unwrap_unchecked(),
         )
     }
 
