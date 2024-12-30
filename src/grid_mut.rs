@@ -1,5 +1,5 @@
 use crate::cols_iter::ColsIter;
-use crate::{Col, Grid, GridIter, Row, RowsIter, View};
+use crate::{Col, Coord, Grid, GridIter, Row, RowsIter, View};
 
 /// A type representing a mutable 2D array.
 pub trait GridMut: Grid {
@@ -25,6 +25,23 @@ pub trait GridMut: Grid {
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item;
+
+    /// Returns a mutable reference to the value stored at the provided coordinate in
+    /// the grid, or `None` if the coordinate is invalid.
+    #[inline]
+    fn get_mut_at<C: Coord>(&mut self, coord: C) -> Option<&mut Self::Item> {
+        self.get_mut(coord.grid_x(self.width())?, coord.grid_y(self.height())?)
+    }
+
+    /// Returns a mutable reference to the value stored at the provided coordinate
+    /// in the grid, skipping any bounds checks.
+    #[inline]
+    unsafe fn get_unchecked_mut_at<C: Coord>(&mut self, coord: C) -> &mut Self::Item {
+        self.get_unchecked_mut(
+            coord.grid_x(self.width()).unwrap_unchecked(),
+            coord.grid_y(self.height()).unwrap_unchecked(),
+        )
+    }
 
     /// Returns row `y` of the grid as a mutable slice if it is able to do so. Algorithms that
     /// work on large portions of the grid may use this to look for performance gain. For
