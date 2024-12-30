@@ -31,7 +31,10 @@ pub struct ClampX<C: Coord>(pub C);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct ClampY<C: Coord>(pub C);
 
+/// An x or y component of a grid coordinate.
 pub trait CoordComponent: Debug + Copy + Clone + Eq + PartialEq + Ord + PartialOrd + Hash {
+    /// Convert this coordinate from its normal form to a position on the grid,
+    /// where `len` is the grid's size on this coordinate's axis.
     fn to_grid(self, len: usize) -> Option<usize>;
 }
 
