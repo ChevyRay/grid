@@ -1,5 +1,7 @@
 use crate::cols_iter::ColsIter;
-use crate::{ArrGrid, Col, Coord, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View};
+use crate::{
+    ArrGrid, Col, Coord, CoordComponent, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View,
+};
 use std::fmt::{Debug, Write};
 
 /// A type representing an immutable 2D array.
@@ -169,20 +171,23 @@ pub trait Grid {
     /// ```
     unsafe fn get_unchecked(&self, x: usize, y: usize) -> &Self::Item;
 
-    /// Returns a reference to the value stored at the provided coordinate in the grid, or
-    /// `None` if the coordinate is invalid.
+    /// Returns a reference to the value stored at the provided coordinate in the grid,
+    /// or `None` if the provided coordinate is out of bounds.
     #[inline]
-    fn get_at<C: Coord>(&self, coord: C) -> Option<&Self::Item> {
-        self.get(coord.grid_x(self.width())?, coord.grid_y(self.height())?)
+    fn get_at(&self, coord: impl Coord) -> Option<&Self::Item> {
+        self.get(
+            coord.x().to_grid(self.width())?,
+            coord.y().to_grid(self.height())?,
+        )
     }
 
     /// Returns a reference to the value stored at the provided coordinate in the grid,
     /// skipping any bounds checks.
     #[inline]
-    unsafe fn get_unchecked_at<C: Coord>(&self, coord: C) -> &Self::Item {
+    unsafe fn get_unchecked_at(&self, coord: impl Coord) -> &Self::Item {
         self.get_unchecked(
-            coord.grid_x(self.width()).unwrap_unchecked(),
-            coord.grid_y(self.height()).unwrap_unchecked(),
+            coord.x().to_grid(self.width()).unwrap_unchecked(),
+            coord.y().to_grid(self.height()).unwrap_unchecked(),
         )
     }
 

@@ -403,5 +403,5 @@ fn test() {
         [3, 4, 5], //
         [6, 7, 8], //
     ];
-    dbg!(grid.get_at(Wrap((-1, 4))));
+    dbg!(grid.get_at((2, Wrap(5))));
 }

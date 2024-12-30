@@ -1,5 +1,5 @@
 use crate::cols_iter::ColsIter;
-use crate::{Col, Coord, Grid, GridIter, Row, RowsIter, View};
+use crate::{Col, Coord, CoordComponent, Grid, GridIter, Row, RowsIter, View};
 
 /// A type representing a mutable 2D array.
 pub trait GridMut: Grid {
@@ -27,19 +27,22 @@ pub trait GridMut: Grid {
     unsafe fn get_unchecked_mut(&mut self, x: usize, y: usize) -> &mut Self::Item;
 
     /// Returns a mutable reference to the value stored at the provided coordinate in
-    /// the grid, or `None` if the coordinate is invalid.
+    /// the grid, or `None` if the provided coordinate is out of bounds.
     #[inline]
-    fn get_mut_at<C: Coord>(&mut self, coord: C) -> Option<&mut Self::Item> {
-        self.get_mut(coord.grid_x(self.width())?, coord.grid_y(self.height())?)
+    fn get_mut_at(&mut self, coord: impl Coord) -> Option<&mut Self::Item> {
+        self.get_mut(
+            coord.x().to_grid(self.width())?,
+            coord.y().to_grid(self.height())?,
+        )
     }
 
     /// Returns a mutable reference to the value stored at the provided coordinate
     /// in the grid, skipping any bounds checks.
     #[inline]
-    unsafe fn get_unchecked_mut_at<C: Coord>(&mut self, coord: C) -> &mut Self::Item {
+    unsafe fn get_unchecked_mut_at(&mut self, coord: impl Coord) -> &mut Self::Item {
         self.get_unchecked_mut(
-            coord.grid_x(self.width()).unwrap_unchecked(),
-            coord.grid_y(self.height()).unwrap_unchecked(),
+            coord.x().to_grid(self.width()).unwrap_unchecked(),
+            coord.y().to_grid(self.height()).unwrap_unchecked(),
         )
     }
 
