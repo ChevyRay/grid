@@ -109,6 +109,54 @@ pub trait Coord {
 
     fn x(&self) -> Self::X;
     fn y(&self) -> Self::Y;
+
+    #[inline]
+    fn wrap(self) -> Wrap<Self>
+    where
+        Self: Sized,
+    {
+        Wrap(self)
+    }
+
+    #[inline]
+    fn wrap_x(self) -> WrapX<Self>
+    where
+        Self: Sized,
+    {
+        WrapX(self)
+    }
+
+    #[inline]
+    fn wrap_y(self) -> WrapY<Self>
+    where
+        Self: Sized,
+    {
+        WrapY(self)
+    }
+
+    #[inline]
+    fn clamp(self) -> Clamp<Self>
+    where
+        Self: Sized,
+    {
+        Clamp(self)
+    }
+
+    #[inline]
+    fn clamp_x(self) -> ClampX<Self>
+    where
+        Self: Sized,
+    {
+        ClampX(self)
+    }
+
+    #[inline]
+    fn clamp_y(self) -> ClampY<Self>
+    where
+        Self: Sized,
+    {
+        ClampY(self)
+    }
 }
 
 impl<X: CoordComponent, Y: CoordComponent> Coord for (X, Y) {
