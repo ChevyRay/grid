@@ -4,9 +4,9 @@ use std::marker::PhantomData;
 
 /// A grid implementation for different storage types.
 pub struct GridBuf<T, S = Vec<T>> {
-    width: usize,
-    height: usize,
-    store: S,
+    pub(crate) width: usize,
+    pub(crate) height: usize,
+    pub(crate) store: S,
     marker: PhantomData<T>,
 }
 
@@ -219,49 +219,6 @@ impl<T, S: Clone> Clone for GridBuf<T, S> {
             store: self.store.clone(),
             marker: PhantomData,
         }
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<T, Store: serde::Serialize> serde::Serialize for GridBuf<T, Store> {
-    #[inline]
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut ser = serializer.serialize_struct("GridBuf", 3)?;
-        ser.serialize_field("width", &self.width)?;
-        ser.serialize_field("height", &self.height)?;
-        ser.serialize_field("store", &self.store)?;
-        ser.end()
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'de, T, S: serde::Deserialize<'de>> serde::Deserialize<'de> for GridBuf<T, S> {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        #[derive(serde::Deserialize)]
-        #[serde(rename(deserialize = "GridBuf"))]
-        struct GridBufDe<S> {
-            width: usize,
-            height: usize,
-            store: S,
-        }
-        let GridBufDe {
-            width,
-            height,
-            store,
-        } = GridBufDe::deserialize(deserializer)?;
-        Ok(Self {
-            width,
-            height,
-            store,
-            marker: PhantomData,
-        })
     }
 }
 

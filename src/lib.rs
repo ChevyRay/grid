@@ -375,6 +375,10 @@ mod col;
 mod col_iter;
 mod cols_iter;
 mod coord;
+#[cfg(feature = "glam")]
+mod feature_glam;
+#[cfg(feature = "serde")]
+mod feature_serde;
 mod grid;
 mod grid_buf;
 mod grid_iter;
