@@ -1,6 +1,4 @@
 use crate::{Grid, GridIter, GridMut};
-use serde::ser::SerializeStruct;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Debug, Formatter};
 use std::marker::PhantomData;
 
@@ -224,12 +222,14 @@ impl<T, S: Clone> Clone for GridBuf<T, S> {
     }
 }
 
-impl<T, Store: Serialize> Serialize for GridBuf<T, Store> {
+#[cfg(feature = "serde")]
+impl<T, Store: serde::Serialize> serde::Serialize for GridBuf<T, Store> {
     #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer,
+        S: serde::Serializer,
     {
+        use serde::ser::SerializeStruct;
         let mut ser = serializer.serialize_struct("GridBuf", 3)?;
         ser.serialize_field("width", &self.width)?;
         ser.serialize_field("height", &self.height)?;
@@ -238,12 +238,13 @@ impl<T, Store: Serialize> Serialize for GridBuf<T, Store> {
     }
 }
 
-impl<'de, T, S: Deserialize<'de>> Deserialize<'de> for GridBuf<T, S> {
+#[cfg(feature = "serde")]
+impl<'de, T, S: serde::Deserialize<'de>> serde::Deserialize<'de> for GridBuf<T, S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>,
+        D: serde::Deserializer<'de>,
     {
-        #[derive(Deserialize)]
+        #[derive(serde::Deserialize)]
         #[serde(rename(deserialize = "GridBuf"))]
         struct GridBufDe<S> {
             width: usize,
