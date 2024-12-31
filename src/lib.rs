@@ -377,6 +377,8 @@ mod cols_iter;
 mod coord;
 #[cfg(feature = "glam")]
 mod feature_glam;
+#[cfg(feature = "mint")]
+mod feature_mint;
 #[cfg(feature = "serde")]
 mod feature_serde;
 mod grid;

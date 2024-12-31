@@ -7,10 +7,12 @@ macro_rules! impl_coord {
             type X = $prim;
             type Y = $prim;
 
+            #[inline]
             fn x(&self) -> Self::X {
                 self.x
             }
 
+            #[inline]
             fn y(&self) -> Self::Y {
                 self.y
             }
