@@ -17,6 +17,21 @@ macro_rules! impl_coord {
                 self.y
             }
         }
+
+        impl Coord for &$vec {
+            type X = $prim;
+            type Y = $prim;
+
+            #[inline]
+            fn x(&self) -> Self::X {
+                self.x
+            }
+
+            #[inline]
+            fn y(&self) -> Self::Y {
+                self.y
+            }
+        }
     };
 }
 

@@ -126,6 +126,21 @@ impl<X: CoordComponent, Y: CoordComponent> Coord for (X, Y) {
     }
 }
 
+impl<X: CoordComponent, Y: CoordComponent> Coord for &(X, Y) {
+    type X = X;
+    type Y = Y;
+
+    #[inline]
+    fn x(&self) -> Self::X {
+        self.0
+    }
+
+    #[inline]
+    fn y(&self) -> Self::Y {
+        self.1
+    }
+}
+
 impl<C: Coord> Coord for Wrap<C>
 where
     Wrap<C::X>: CoordComponent,

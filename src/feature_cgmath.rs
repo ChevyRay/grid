@@ -19,7 +19,37 @@ macro_rules! impl_coord {
             }
         }
 
+        impl<U> Coord for &Vector2D<$prim, U> {
+            type X = $prim;
+            type Y = $prim;
+
+            #[inline]
+            fn x(&self) -> $prim {
+                self.x
+            }
+
+            #[inline]
+            fn y(&self) -> $prim {
+                self.y
+            }
+        }
+
         impl<U> Coord for Point2D<$prim, U> {
+            type X = $prim;
+            type Y = $prim;
+
+            #[inline]
+            fn x(&self) -> $prim {
+                self.x
+            }
+
+            #[inline]
+            fn y(&self) -> $prim {
+                self.y
+            }
+        }
+
+        impl<U> Coord for &Point2D<$prim, U> {
             type X = $prim;
             type Y = $prim;
 

@@ -3,7 +3,8 @@ use mint::Point2;
 
 macro_rules! impl_coord {
     ($($prim:ident)*) => {
-        $(impl Coord for Point2<$prim> {
+        $(
+        impl Coord for Point2<$prim> {
             type X = $prim;
             type Y = $prim;
 
@@ -16,7 +17,23 @@ macro_rules! impl_coord {
             fn y(&self) -> Self::Y {
                 self.y
             }
-        })*
+        }
+
+        impl Coord for &Point2<$prim> {
+            type X = $prim;
+            type Y = $prim;
+
+            #[inline]
+            fn x(&self) -> Self::X {
+                self.x
+            }
+
+            #[inline]
+            fn y(&self) -> Self::Y {
+                self.y
+            }
+        }
+        )*
     };
 }
 
