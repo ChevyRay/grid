@@ -1,8 +1,8 @@
-use cgmath::{Point2, Vector2};
+use euclid::{Point2D, Vector2D};
 
 macro_rules! impl_coord {
     ($($prim:ty)*) => {
-        impl Coord for Vector2<$prim> {
+        impl<U> Coord for Vector2D<$prim, U> {
             type X = $prim;
             type Y = $prim;
 
@@ -17,7 +17,7 @@ macro_rules! impl_coord {
             }
         }
 
-        impl Coord for Point2<$prim> {
+        impl<U> Coord for Point2D<$prim, U> {
             type X = $prim;
             type Y = $prim;
 

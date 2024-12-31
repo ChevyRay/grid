@@ -377,6 +377,8 @@ mod cols_iter;
 mod coord;
 #[cfg(feature = "cgmath")]
 mod feature_cgmath;
+#[cfg(feature = "euclid")]
+mod feature_euclid;
 #[cfg(feature = "glam")]
 mod feature_glam;
 #[cfg(feature = "mint")]
