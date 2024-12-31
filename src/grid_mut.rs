@@ -54,6 +54,14 @@ pub trait GridMut: Grid {
     /// [`copy_from_slice`]: https://doc.rust-lang.org/std/primitive.slice.html#method.copy_from_slice
     fn row_slice_mut(&mut self, y: usize) -> Option<&mut [Self::Item]>;
 
+    /// Returns row `y` of the grid as a mutable slice if it is able to do so. This variation
+    /// can take signed integers, or y-values in a [`Wrap`](crate::Wrap) or
+    /// [`Clamp`](crate::Clamp).
+    #[inline]
+    fn row_slice_mut_at(&mut self, y: impl CoordComponent) -> Option<&mut [Self::Item]> {
+        self.row_slice_mut(y.to_grid(self.height())?)
+    }
+
     /// Replace the value stored at `(x, y)` in the grid. If the provided coordinate was
     /// out of bounds, `None` is returned, otherwise the replaced value is returned.
     #[inline]

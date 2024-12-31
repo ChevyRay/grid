@@ -215,6 +215,14 @@ pub trait Grid {
     /// ```
     fn row_slice(&self, y: usize) -> Option<&[Self::Item]>;
 
+    /// Returns row `y` of the grid as a slice if it is able to do so. This variation
+    /// can take signed integers, or y-values in a [`Wrap`](crate::Wrap) or
+    /// [`Clamp`](crate::Clamp).
+    #[inline]
+    fn row_slice_at(&self, y: impl CoordComponent) -> Option<&[Self::Item]> {
+        self.row_slice(y.to_grid(self.height())?)
+    }
+
     /// Returns true if both grids are the same size.
     ///
     /// ```
