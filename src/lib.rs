@@ -282,9 +282,10 @@
 //!
 //! # Coordinates
 //!
-//! In addition to the [`get`] and [`get_mut`] methods, there are also [`get_at`] and [`get_mut_at`]
-//! alternatives that allow you to pass in any value that implements the [`Coord`] trait. This trait
-//! is implemented on tuple pairs of all integer types, even signed values:
+//! In addition to the [`get`](Grid::get) and [`get_mut`](GridMut::get_mut) methods, there are also
+//! [`get_at`](Grid::get_at) and [`get_mut_at`](GridMut::get_mut_at) alternatives that allow you to
+//! pass in any value that implements the [`Coord`] trait. This trait is implemented on tuple pairs
+//! of all integer types, even signed values:
 //!
 //! ```
 //! # use grid::Grid;
@@ -362,10 +363,52 @@
 //! assert_eq!(nums.get_at(IVec2::new(2, 1)), Some(&6));
 //! ```
 //!
-//! [`get`]: Grid::get
-//! [`get_mut`]: GridMut::get_mut
-//! [`get_at`]: Grid::get_at
-//! [`get_mut_at`]: GridMut::get_mut_at
+//! By default, negative integer coordinates will be out-of-bounds and return `None` from these
+//! methods. But this is not always the desired behavior. For example, you may want `-1` to wrap
+//! around the grid, so `(-1, -1)` could be used to represent the bottom-right cell.
+//!
+//! To enable this, all you have to do is wrap your coordinate in a [`Wrap`] struct, which will
+//! also wrap the coordinate when it extends beyond the grid's positive dimensions as well:
+//!
+//! ```
+//! use grid::{Grid, Wrap};
+//!
+//! let mut nums = [
+//!     [1, 2, 3],
+//!     [4, 5, 6],
+//!     [7, 8, 9],
+//! ];
+//!
+//! assert_eq!(nums.get_at((-1, -1)), None);
+//! assert_eq!(nums.get_at(Wrap((-1, -1))), Some(&9));
+//! assert_eq!(nums.get_at(Wrap((3, -2))), Some(&4));
+//! ```
+//!
+//! Another common behavior is for coordinates that are outside of the bounds of the grid to
+//! be clamped inside it. To achieve this, you can wrap them in a [`Clamp`] struct:
+//!
+//! ```
+//! use grid::{Grid, Clamp};
+//!
+//! let mut nums = [
+//!     [1, 2, 3],
+//!     [4, 5, 6],
+//!     [7, 8, 9],
+//! ];
+//!
+//! assert_eq!(nums.get_at((-1, -1)), None);
+//! assert_eq!(nums.get_at(Clamp((-1, -1))), Some(&1));
+//! assert_eq!(nums.get_at(Clamp((5, 5))), Some(&9));
+//! ```
+//!
+//! `Wrap` and `Clamp` will apply to both the X and Y coordinates by default, and can be used on
+//! any types (even your own) that have implemented `Coord`. If you want to *only* wrap one of
+//! either X or Y, you can use [`WrapX`]/[`WrapY`] and [`ClampX`]/[`ClampY`].
+//!
+//! You can even mix and match these. For example, I could wrap a coordinate on the x-axis, and
+//! clamp it on the y-axis by using `WrapX(ClampY((x, y)))`. This is a bit unseemly, and so
+//! another way to accomplish the same thing would be just to wrap/clamp the axes of the coordinate
+//! itself, like so: `(Wrap(x), Clamp(y))`.
 //!
 //! # Generic Code
 //!
