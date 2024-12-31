@@ -7,7 +7,7 @@ pub struct GridBuf<T, S = Vec<T>> {
     pub(crate) width: usize,
     pub(crate) height: usize,
     pub(crate) store: S,
-    marker: PhantomData<T>,
+    pub(crate) marker: PhantomData<T>,
 }
 
 /// A grid implementation using a `Vec` for storage.

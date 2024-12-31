@@ -1,18 +1,20 @@
+use crate::Coord;
 use euclid::{Point2D, Vector2D};
 
 macro_rules! impl_coord {
-    ($($prim:ty)*) => {
+    ($($prim:ident)*) => {
+        $(
         impl<U> Coord for Vector2D<$prim, U> {
             type X = $prim;
             type Y = $prim;
 
             #[inline]
-            fn x(&self) -> Self::X {
+            fn x(&self) -> $prim {
                 self.x
             }
 
             #[inline]
-            fn y(&self) -> Self::Y {
+            fn y(&self) -> $prim {
                 self.y
             }
         }
@@ -22,15 +24,16 @@ macro_rules! impl_coord {
             type Y = $prim;
 
             #[inline]
-            fn x(&self) -> Self::X {
+            fn x(&self) -> $prim {
                 self.x
             }
 
             #[inline]
-            fn y(&self) -> Self::Y {
+            fn y(&self) -> $prim {
                 self.y
             }
         }
+        )*
     };
 }
 

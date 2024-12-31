@@ -1,8 +1,9 @@
+use crate::Coord;
 use vek::vec::Vec2;
 
 macro_rules! impl_coord {
-    ($($prim:ty)*) => {
-        impl Coord for Vec2<$prim> {
+    ($($prim:ident)*) => {
+        $(impl Coord for Vec2<$prim> {
             type X = $prim;
             type Y = $prim;
 
@@ -15,7 +16,7 @@ macro_rules! impl_coord {
             fn y(&self) -> Self::Y {
                 self.y
             }
-        }
+        })*
     };
 }
 

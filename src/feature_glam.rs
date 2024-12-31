@@ -2,7 +2,7 @@ use crate::Coord;
 use glam::{I16Vec2, I64Vec2, I8Vec2, IVec2, U16Vec2, U64Vec2, U8Vec2, UVec2};
 
 macro_rules! impl_coord {
-    ($vec:ty $prim:ty) => {
+    ($vec:ident $prim:ty) => {
         impl Coord for $vec {
             type X = $prim;
             type Y = $prim;
