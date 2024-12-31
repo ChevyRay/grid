@@ -10,6 +10,7 @@
 //! - [GridBufs](#gridbufs)
 //! - [Views](#views)
 //! - [Drawing](#drawing)
+//! - [Coordinates](#coordinates)
 //! - [Generic Code](#generic-code)
 //! - [Roadmap](#roadmap)
 //!
@@ -278,6 +279,94 @@
 //!
 //! If two grids are the same size, one can be "pasted" onto the other. So to paint just
 //! the middle 2×2 section, we get a view of it and then draw another 2×2 grid on top.
+//!
+//! # Coordinates
+//!
+//! In addition to the [`get`] and [`get_mut`] methods, there are also [`get_at`] and [`get_mut_at`]
+//! alternatives that allow you to pass in any value that implements the [`Coord`] trait. This trait
+//! is implemented on tuple pairs of all integer types, even signed values:
+//!
+//! ```
+//! # use grid::Grid;
+//! let mut nums = [
+//!     [1, 2, 3],
+//!     [4, 5, 6],
+//!     [7, 8, 9],
+//! ];
+//!
+//! assert_eq!(nums.get_at((1, 2)), Some(&8));
+//! assert_eq!(nums.get_at((2i16, 1i16)), Some(&6));
+//! ```
+//!
+//! It is very common, especially in games and graphical software, to use structs for points and
+//! vectors that overload operators such as addition and multiplication, to make vector math a
+//! lot more pleasant to write. In such a case, it is also very convenient to be able to use those
+//! types as 2D coordinates in a grid. The [`Coord`] trait allows you to do just this:
+//!
+//! ```
+//! use grid::{Grid, Coord};
+//!
+//! struct Point {
+//!     x: i32,
+//!     y: i32,
+//! }
+//!
+//! impl Coord for Point {
+//!     type X = i32;
+//!     type Y = i32;
+//!
+//!     fn x(&self) -> Self::X {
+//!         self.x
+//!     }
+//!
+//!     fn y(&self) -> Self::Y {
+//!         self.y
+//!     }
+//! }
+//!
+//! let mut nums = [
+//!     [1, 2, 3],
+//!     [4, 5, 6],
+//!     [7, 8, 9],
+//! ];
+//!
+//! assert_eq!(nums.get_at(Point { x: 1, y: 2 }), Some(&8));
+//! assert_eq!(nums.get_at(Point { x: 2, y: 1 }), Some(&6));
+//! ```
+//!
+//! Implementations are provided for many of the common math libraries behind features, such as
+//! `cgmath`, `euclid`, `glam`, `mint`, and `vek`. So for example, if you are using `glam`, you
+//! can enable that feature and use its integer vectors as grid coordinates:
+//!
+//! ```
+//! # mod glam {
+//! #     pub struct IVec2 { x: i32, y: i32 }
+//! #     impl IVec2 { pub fn new(x: i32, y: i32) -> Self { Self { x, y } } }
+//! #     impl grid::Coord for IVec2 {
+//! #         type X = i32;
+//! #         type Y = i32;
+//! #         fn x(&self) -> i32 { self.x }
+//! #         fn y(&self) -> i32 { self.y }
+//! #     }
+//! # }
+//!
+//! use grid::Grid;
+//! use glam::IVec2;
+//!
+//! let mut nums = [
+//!     [1, 2, 3],
+//!     [4, 5, 6],
+//!     [7, 8, 9],
+//! ];
+//!
+//! assert_eq!(nums.get_at(IVec2::new(1, 2)), Some(&8));
+//! assert_eq!(nums.get_at(IVec2::new(2, 1)), Some(&6));
+//! ```
+//!
+//! [`get`]: Grid::get
+//! [`get_mut`]: GridMut::get_mut
+//! [`get_at`]: Grid::get_at
+//! [`get_mut_at`]: GridMut::get_mut_at
 //!
 //! # Generic Code
 //!
