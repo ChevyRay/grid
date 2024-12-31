@@ -515,7 +515,7 @@ mod feature_mint;
 #[cfg(feature = "serde")]
 mod feature_serde;
 #[cfg(feature = "vek")]
-mod features_vek;
+mod feature_vek;
 mod grid;
 mod grid_buf;
 mod grid_iter;
