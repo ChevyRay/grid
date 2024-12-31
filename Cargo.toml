@@ -9,6 +9,7 @@ euclid = { version = "0.22.11", optional = true }
 glam = { version = "0.29.2", optional = true }
 mint = { version = "0.5.9", optional = true }
 serde = { version = "1.0.216", features = ["derive"], optional = true }
+vek = { version = "0.17.1", optional = true }
 
 [features]
 glam = ["dep:glam"]
@@ -16,3 +17,4 @@ serde = ["dep:serde"]
 mint = ["dep:mint"]
 cgmath = ["dep:cgmath"]
 euclid = ["dep:euclid"]
+vek = ["dep:vek"]
