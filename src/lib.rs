@@ -349,7 +349,6 @@
 //! #         fn y(&self) -> i32 { self.y }
 //! #     }
 //! # }
-//!
 //! use grid::Grid;
 //! use glam::IVec2;
 //!
@@ -466,8 +465,6 @@ mod cols_iter;
 mod coord;
 #[cfg(feature = "cgmath")]
 mod feature_cgmath;
-#[cfg(feature = "euclid")]
-mod feature_euclid;
 #[cfg(feature = "glam")]
 mod feature_glam;
 #[cfg(feature = "mint")]
