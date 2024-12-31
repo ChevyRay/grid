@@ -95,7 +95,7 @@ pub trait GridMut: Grid {
         w: usize,
         h: usize,
     ) -> Option<View<&mut Self::RootMut>> {
-        if x + w <= self.width() && y + h <= self.height() {
+        if x.checked_add(w)? <= self.width() && y.checked_add(h)? <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
             Some(View::new(self.root_mut(), x, y, w, h))

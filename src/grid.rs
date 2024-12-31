@@ -273,7 +273,7 @@ pub trait Grid {
     /// ```
     #[inline]
     fn try_view(&self, x: usize, y: usize, w: usize, h: usize) -> Option<View<&Self::Root>> {
-        if x + w <= self.width() && y + h <= self.height() {
+        if x.checked_add(w)? <= self.width() && y.checked_add(h)? <= self.height() {
             let x = self.root_x() + x;
             let y = self.root_y() + y;
             Some(View::new(self.root(), x, y, w, h))
