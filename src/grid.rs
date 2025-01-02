@@ -3,6 +3,7 @@ use crate::{
     ArrGrid, Col, Coord, CoordComponent, GridBuf, GridIter, GridMut, Row, RowsIter, VecGrid, View,
 };
 use std::fmt::{Debug, Write};
+use std::ops::Index;
 
 /// A type representing an immutable 2D array.
 pub trait Grid {

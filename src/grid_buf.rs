@@ -1,6 +1,7 @@
-use crate::{Grid, GridIter, GridMut};
+use crate::{Coord, CoordComponent, Grid, GridIter, GridMut};
 use std::fmt::{Debug, Formatter};
 use std::marker::PhantomData;
+use std::ops::{Index, IndexMut};
 
 /// A grid implementation for different storage types.
 pub struct GridBuf<T, S = Vec<T>> {
@@ -226,5 +227,31 @@ impl<T: Debug, S: AsRef<[T]>> Debug for GridBuf<T, S> {
     #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         self.debug_fmt(f)
+    }
+}
+
+impl<C: Coord, T, S: AsRef<[T]>> Index<C> for GridBuf<T, S> {
+    type Output = T;
+
+    #[inline]
+    fn index(&self, index: C) -> &Self::Output {
+        let (w, h) = (self.width, self.height);
+        self.get(
+            index.x().to_grid(w).expect("invalid x-coordinate"),
+            index.y().to_grid(h).expect("invalid y-coordinate"),
+        )
+        .expect("coordinate out of bounds")
+    }
+}
+
+impl<C: Coord, T, S: AsRef<[T]> + AsMut<[T]>> IndexMut<C> for GridBuf<T, S> {
+    #[inline]
+    fn index_mut(&mut self, index: C) -> &mut Self::Output {
+        let (w, h) = (self.width, self.height);
+        self.get_mut(
+            index.x().to_grid(w).expect("invalid x-coordinate"),
+            index.y().to_grid(h).expect("invalid y-coordinate"),
+        )
+        .expect("coordinate out of bounds")
     }
 }
