@@ -12,7 +12,6 @@
 //! - [Drawing](#drawing)
 //! - [Coordinates](#coordinates)
 //! - [Generic Code](#generic-code)
-//! - [Roadmap](#roadmap)
 //!
 //! <div class="warning"><em>
 //! This library is still an early draft, is missing features, and should be
