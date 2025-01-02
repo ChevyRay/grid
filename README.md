@@ -10,6 +10,7 @@ choose the actual implementation and storage method for their grids.
 - [GridBufs](#gridbufs)
 - [Views](#views)
 - [Drawing](#drawing)
+- [Drawing](#drawing)
 - [Generic Code](#generic-code)
 - [Roadmap](#roadmap)
 
@@ -478,13 +479,5 @@ discovered yet.
 wrapper type, to make it more flexible. Not sure yet.
 - [ ] I may want more grid implementations, such as a `HashMap`-backed grid, a
 sparse grid, or other useful features like that.
-- [ ] Serde support should probably be feature-gated.
 - [ ] I haven't written no-std stuff before, but I feel like a no-std version of
 this library could be possible, so I'd need to do some looking into that.
-- [ ] Does some concept of a type representing a coordinate or rectangle fit into the
-scope of this library? The usefulness of coordinate types is already proven, but the
-current `usize` requirement of sampling grids poses some problems that need addressed:
-are all unsigned integers allowed? Are signed integers allowed? Is `-1` outside the
-bounds of a grid, or does it wrap around? Rust's standard library does not answer
-these questions and only uses `usize` for sampling, so there's no basis for this
-answer at least within the core libraries.

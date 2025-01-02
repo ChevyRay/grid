@@ -464,43 +464,6 @@
 //!
 //! Because the function is written generically, it can be called on any type of grid,
 //! with any sort of fill value. It could be numbers, chars, enums, structs, or anything.
-//!
-//! # Roadmap
-//!
-//! There are currently some missing features, traits that should be implemented, and
-//! probably a few bugs to sniff out. I don't have an exact roadmap yet, but for now
-//! I'll put a few notes here about what needs to be done.
-//!
-//! - [ ] It doesn't really have a name. I was thinking of calling it `moz` maybe? Unsure,
-//!   open to suggestions on this. I don't know if I want to put this on [crates.io](crates.io),
-//!   but if I was going to it would need a unique name.
-//! - [ ] The crate's approach to iterators needs to be evaluated, as I feel like some
-//!   iterators can be improved, some better naming conventions can be used, and there are
-//!   probably certain useful iterators that are straight up missing.
-//! - [ ] There are currently no tests, so one big task I need to do is write a full set
-//!   of tests for all the constructors, methods, iterators, and trait implementations to
-//!   make sure everything works correctly and to prevent future breaking changes.
-//! - [ ] In addition to tests, I would like to fill out the documentation more, with
-//!   more explanations of methods, `# Example` sections to show how to use them (and act as
-//!   doc tests), and more clear documentation of which functions can panic and under which
-//!   circumstances.
-//! - [ ] Many essential std traits are likely not implemented yet that should be, and
-//!   there are also probably traits that the library should be supplying that I have not
-//!   discovered yet.
-//! - [ ] Maybe `GridBuf`'s backing store should maybe be driven by a custom trait, or
-//!   wrapper type, to make it more flexible. Not sure yet.
-//! - [ ] I may want more grid implementations, such as a `HashMap`-backed grid, a
-//!   sparse grid, or other useful features like that.
-//! - [ ] Serde support should probably be feature-gated.
-//! - [ ] I haven't written no-std stuff before, but I feel like a no-std version of
-//!   this library could be possible, so I'd need to do some looking into that.
-//! - [ ] Does some concept of a type representing a coordinate or rectangle fit into the
-//!   scope of this library? The usefulness of coordinate types is already proven, but the
-//!   current `usize` requirement of sampling grids poses some problems that need addressed:
-//!   are all unsigned integers allowed? Are signed integers allowed? Is `-1` outside the
-//!   bounds of a grid, or does it wrap around? Rust's standard library does not answer
-//!   these questions and only uses `usize` for sampling, so there's no basis for this
-//!   answer at least within the core libraries.
 
 mod col;
 mod col_iter;
