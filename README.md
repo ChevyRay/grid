@@ -461,11 +461,11 @@ are provided behind features that you can optionally enable.
 
 | Feature    | Description                                              |
 | ---------- | -------------------------------------------------------- |
-| `serde`    | Provides [serde] implementations for [`GridBuf`].        |
-| `cgmath`   | Provides [`Coord`] implementations for [cgmath] vectors. |
-| `glam`     | Provides [`Coord`] implementations for [glam] vectors.   |
-| `mint`     | Provides [`Coord`] implementations for [mint] vectors.   |
-| `vek`      | Provides [`Coord`] implementations for [vek] vectors.    |
+| `serde`    | Provides [serde] implementations for `GridBuf`.        |
+| `cgmath`   | Provides `Coord` implementations for [cgmath] vectors. |
+| `glam`     | Provides `Coord` implementations for [glam] vectors.   |
+| `mint`     | Provides `Coord` implementations for [mint] vectors.   |
+| `vek`      | Provides `Coord` implementations for [vek] vectors.    |
 
 [serde]: https://crates.io/crates/serde
 [cgmath]: https://crates.io/crates/cgmath
