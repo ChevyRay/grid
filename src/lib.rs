@@ -12,6 +12,7 @@
 //! - [Drawing](#drawing)
 //! - [Coordinates](#coordinates)
 //! - [Generic Code](#generic-code)
+//! - [Features](#features)
 //!
 //! <div class="warning"><em>
 //! This library is still an early draft, is missing features, and should be
@@ -463,6 +464,25 @@
 //!
 //! Because the function is written generically, it can be called on any type of grid,
 //! with any sort of fill value. It could be numbers, chars, enums, structs, or anything.
+//!
+//! # Features
+//!
+//! This crate has no dependencies outside of the std, but some convenient implementations
+//! are provided behind features that you can optionally enable.
+//!
+//! | Feature    | Description                                              |
+//! | ---------- | -------------------------------------------------------- |
+//! | `serde`    | Provides [serde] implementations for [`GridBuf`].        |
+//! | `cgmath`   | Provides [`Coord`] implementations for [cgmath] vectors. |
+//! | `glam`     | Provides [`Coord`] implementations for [glam] vectors.   |
+//! | `mint`     | Provides [`Coord`] implementations for [mint] vectors.   |
+//! | `vek`      | Provides [`Coord`] implementations for [vek] vectors.    |
+//!
+//! [serde]: https://crates.io/crates/serde
+//! [cgmath]: https://crates.io/crates/cgmath
+//! [glam]: https://crates.io/crates/glam
+//! [mint]: https://crates.io/crates/mint
+//! [vek]: https://crates.io/crates/vek
 
 mod col;
 mod col_iter;
@@ -501,10 +521,16 @@ pub use view::*;
 
 #[test]
 fn test() {
-    let grid = [
-        [0, 1, 2], //
-        [3, 4, 5], //
-        [6, 7, 8], //
-    ];
-    dbg!(grid.get_at((2, Wrap(5))));
+    let grid = ArrGrid::with_store(
+        3,
+        3,
+        [
+            0, 1, 2, //
+            3, 4, 5, //
+            6, 7, 8, //
+        ],
+    );
+    for (val, x, y) in &grid {
+        println!("({x},{y}) = {val}");
+    }
 }

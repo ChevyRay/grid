@@ -10,8 +10,9 @@ choose the actual implementation and storage method for their grids.
 - [GridBufs](#gridbufs)
 - [Views](#views)
 - [Drawing](#drawing)
-- [Drawing](#drawing)
+- [Coordinates](#coordinates)
 - [Generic Code](#generic-code)
+- [Features](#coordinates)
 - [Roadmap](#roadmap)
 
 > [!WARNING]  
@@ -452,6 +453,25 @@ assert_eq!(nums, [
 
 Because the function is written generically, it can be called on any type of grid,
 with any sort of fill value. It could be numbers, chars, enums, structs, or anything.
+
+# Features
+
+This crate has no dependencies outside of the std, but some convenient implementations
+are provided behind features that you can optionally enable.
+
+| Feature    | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| `serde`    | Provides [serde] implementations for [`GridBuf`].        |
+| `cgmath`   | Provides [`Coord`] implementations for [cgmath] vectors. |
+| `glam`     | Provides [`Coord`] implementations for [glam] vectors.   |
+| `mint`     | Provides [`Coord`] implementations for [mint] vectors.   |
+| `vek`      | Provides [`Coord`] implementations for [vek] vectors.    |
+
+[serde]: https://crates.io/crates/serde
+[cgmath]: https://crates.io/crates/cgmath
+[glam]: https://crates.io/crates/glam
+[mint]: https://crates.io/crates/mint
+[vek]: https://crates.io/crates/vek
 
 # Roadmap
 
