@@ -12,7 +12,7 @@ choose the actual implementation and storage method for their grids.
 - [Drawing](#drawing)
 - [Coordinates](#coordinates)
 - [Generic Code](#generic-code)
-- [Features](#coordinates)
+- [Features](#features)
 - [Roadmap](#roadmap)
 
 > [!WARNING]  
